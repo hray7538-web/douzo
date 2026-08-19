@@ -26,6 +26,9 @@ LANGS = {
    btn_mail="Send by email", btn_copy="Copy", copied="Copied",
    note="We'll reply with the confirmation. If the first place is full, we try the next.",
    foot="Douzo — Nagoya, Japan",
+   trust_h='What we keep', trust=['<b>We check both sides.</b> We look at the places, and we look at the guests too.', '<b>Everything is agreed before you arrive.</b> Allergies, headcount, budget, time — we pass it all on in Japanese, so nothing breaks at the table.', "<b>We don't send the same problem twice.</b> No-shows and rudeness mean we stop booking for that person."],
+   pay_h='Paying', pay=['<b>Pay what you think it was worth.</b> Guests pay. Shops pay. Either, both, or neither.', '<b>Paying more does not buy priority.</b> We will not put one guest ahead of another for money. If we did, none of this would be worth trusting.', 'It is a signal of trust, not a purchase.'],
+   shop_h='For shops', shop_cta='For shops in Nagoya',
    kw="Nagoya reservation, book restaurant Nagoya English, Nagoya salon booking"),
 
  "ja": dict(name="日本語", hreflang="ja", dir="ja",
@@ -44,6 +47,9 @@ LANGS = {
    btn_mail="メールで送る", btn_copy="コピー", copied="コピーしました",
    note="確定のご連絡をいたします。最初のお店が満席の場合は次をお探しします。",
    foot="Douzo — 名古屋",
+   trust_h='私たちが守ること', trust=['<b>両方を見ます。</b>お店を評価し、お客様も評価します。', '<b>到着前にすべて合意しておきます。</b>アレルギー・人数・予算・時間を日本語でお伝えするので、席で問題が起きません。', '<b>同じ問題を二度送りません。</b>無連絡キャンセルや失礼があった方には、以後お取り次ぎしません。'],
+   pay_h='料金について', pay=['<b>価値があったと思う額をお支払いください。</b>お客様が払っても、お店が払っても、どちらでも、どちらでなくても構いません。', '<b>多く払っても優先されません。</b>お金で順番を売りません。売った時点で、信頼する意味がなくなります。', 'これは購入ではなく、信頼の合図です。'],
+   shop_h='お店の方へ', shop_cta='名古屋のお店の方へ',
    kw="名古屋 予約代行, 名古屋 外国人 予約, 名古屋 飲食店 予約"),
 
  "ko": dict(name="한국어", hreflang="ko", dir="ko",
@@ -62,6 +68,9 @@ LANGS = {
    btn_mail="메일로 보내기", btn_copy="복사", copied="복사했습니다",
    note="확정되면 연락드립니다. 첫 가게가 만석이면 다음 곳을 찾습니다.",
    foot="Douzo — 나고야",
+   trust_h='우리가 지키는 것', trust=['<b>양쪽을 봅니다.</b> 가게를 평가하고, 손님도 평가합니다.', '<b>도착하기 전에 다 합의해 둡니다.</b> 알레르기·인원·예산·시간을 일본어로 전달해서, 자리에서 문제가 생기지 않습니다.', '<b>같은 문제를 두 번 보내지 않습니다.</b> 노쇼나 무례가 있었던 분은 이후 중개하지 않습니다.'],
+   pay_h='요금', pay=['<b>값이 있었다고 생각하는 만큼 내십니다.</b> 손님이 내도, 가게가 내도, 둘 다여도, 아니어도 괜찮습니다.', '<b>많이 내도 우선순위를 살 수 없습니다.</b> 돈으로 순서를 팔지 않습니다. 파는 순간 신뢰할 이유가 없어집니다.', '구매가 아니라 신뢰의 표시입니다.'],
+   shop_h='가게 하시는 분께', shop_cta='나고야 가게 하시는 분께',
    kw="나고야 예약 대행, 나고야 맛집 예약, 나고야 미용실 예약"),
 
  "zh-hant": dict(name="繁體中文", hreflang="zh-Hant", dir="zh-hant",
@@ -80,6 +89,9 @@ LANGS = {
    btn_mail="用電子郵件寄出", btn_copy="複製", copied="已複製",
    note="確認後會通知您。如果第一家滿了，我們會找下一家。",
    foot="Douzo — 名古屋",
+   trust_h='我們堅持的事', trust=['<b>我們看兩邊。</b>我們評價店家，也評價客人。', '<b>到店前全部談好。</b>過敏、人數、預算、時間，我們用日語轉達，所以在座位上不會出問題。', '<b>同樣的問題不送第二次。</b>訂了不到、態度失禮的客人，之後我們不再代訂。'],
+   pay_h='關於費用', pay=['<b>覺得值多少就付多少。</b>客人付、店家付、兩邊付、都不付，都可以。', '<b>付得多不會被優先。</b>我們不用錢賣順序。一旦賣了，就沒有信任的意義了。', '這不是購買，是信任的表示。'],
+   shop_h='給店家', shop_cta='給名古屋的店家',
    kw="名古屋 訂位, 名古屋 餐廳 預約, 名古屋 美容院 預約"),
 
  "zh-hans": dict(name="简体中文", hreflang="zh-Hans", dir="zh-hans",
@@ -98,6 +110,9 @@ LANGS = {
    btn_mail="用邮件发送", btn_copy="复制", copied="已复制",
    note="确认后会通知您。如果第一家满了，我们会找下一家。",
    foot="Douzo — 名古屋",
+   trust_h='我们坚持的事', trust=['<b>我们看两边。</b>我们评价店家，也评价客人。', '<b>到店前全部谈好。</b>过敏、人数、预算、时间，我们用日语转达，所以在座位上不会出问题。', '<b>同样的问题不送第二次。</b>订了不到、态度失礼的客人，之后我们不再代订。'],
+   pay_h='关于费用', pay=['<b>觉得值多少就付多少。</b>客人付、店家付、两边付、都不付，都可以。', '<b>付得多不会被优先。</b>我们不用钱卖顺序。一旦卖了，就没有信任的意义了。', '这不是购买，是信任的表示。'],
+   shop_h='给店家', shop_cta='给名古屋的店家',
    kw="名古屋 订位, 名古屋 餐厅 预约, 名古屋 美容院 预约"),
 
  "th": dict(name="ไทย", hreflang="th", dir="th",
@@ -116,6 +131,9 @@ LANGS = {
    btn_mail="ส่งทางอีเมล", btn_copy="คัดลอก", copied="คัดลอกแล้ว",
    note="เราจะแจ้งผลการยืนยัน หากร้านแรกเต็ม เราจะหาร้านถัดไป",
    foot="Douzo — นาโกยา",
+   trust_h='สิ่งที่เรายึดถือ', trust=['<b>เราดูทั้งสองฝ่าย</b> เราประเมินร้าน และประเมินลูกค้าด้วย', '<b>ตกลงกันครบก่อนไปถึง</b> ภูมิแพ้ จำนวนคน งบประมาณ เวลา เราส่งต่อเป็นภาษาญี่ปุ่น จึงไม่มีปัญหาที่โต๊ะ', '<b>เราไม่ส่งปัญหาเดิมสองครั้ง</b> ผู้ที่จองแล้วไม่ไปหรือเสียมารยาท เราจะไม่จองให้อีก'],
+   pay_h='เรื่องค่าบริการ', pay=['<b>จ่ายเท่าที่คุณคิดว่าคุ้ม</b> ลูกค้าจ่ายก็ได้ ร้านจ่ายก็ได้ ทั้งสองฝ่ายหรือไม่จ่ายเลยก็ได้', '<b>จ่ายมากไม่ได้สิทธิ์ก่อน</b> เราไม่ขายลำดับด้วยเงิน ถ้าขาย ก็ไม่มีเหตุให้เชื่อใจกันอีก', 'นี่ไม่ใช่การซื้อ แต่เป็นสัญญาณของความไว้ใจ'],
+   shop_h='สำหรับร้านค้า', shop_cta='สำหรับร้านในนาโกยา',
    kw="จองร้านอาหาร นาโกยา, นาโกยา จองร้าน, นาโกยา ร้านทำผม จอง"),
 }
 
@@ -285,6 +303,9 @@ def formbox(v):
 <p class="note">{v['note']}</p>
 </div>"""
 
+def shoplang(lang):
+    return LANGS["ja"]["dir"] if lang in ("ja",) else (LANGS[lang]["dir"] if lang in SHOP else LANGS["en"]["dir"])
+
 def home(lang):
     v=LANGS[lang]
     cats="".join('<li><a href="%s/%s/%s/"><b>%s</b><small>%s</small></a></li>'%(
@@ -298,7 +319,12 @@ def home(lang):
 <ol class="steps">{steps}</ol>
 <h2 class="sec">{html.escape(v['why_h'])}</h2>
 <ul class="why">{"".join("<li>%s</li>"%w for w in v['why'])}</ul>
-<ul class="cats">{cats}</ul>"""
+<h2 class="sec">{html.escape(v['trust_h'])}</h2>
+<ul class="why">{"".join("<li>%s</li>"%w for w in v['trust'])}</ul>
+<h2 class="sec">{html.escape(v['pay_h'])}</h2>
+<ul class="why">{"".join("<li>%s</li>"%w for w in v['pay'])}</ul>
+<ul class="cats">{cats}</ul>
+<ul class="cats"><li><a href="{SITE}/{shoplang(lang)}/shops/"><b>{html.escape(v['shop_cta'])}</b><small>{html.escape(v['shop_h'])}</small></a></li></ul>"""
     body=body.replace('<h2 class="sec"></h2>','')
     t = "Douzo — %s" % (v["tagline"].replace("<br>"," ").strip())
     return shell(lang, t, v["sub"], v["kw"], "%s/%s/"%(SITE,v["dir"]), body, "")
@@ -314,6 +340,74 @@ def catpage(lang, c):
 <a class="back" href="{SITE}/{v['dir']}/">← Douzo</a>"""
     return shell(lang, "%s | Douzo"%c["t"][lang], c["d"][lang], v["kw"], "%s/%s/%s/"%(SITE,v["dir"],c["slug"]), body, c["slug"]+"/")
 
+
+SHOP = dict(
+ ja=dict(title="名古屋のお店の方へ | Douzo",
+   h1="外国人のご予約を、<br>安心して受けられるように。",
+   sub="Douzo は、訪日のお客様に代わって日本語でご予約をお取りするサービスです。お店側のご登録・掲載料・システム導入は一切不要です。",
+   lead_h="お店にとって何が変わるか",
+   lead=["<b>条件は事前にすべて合意済みです。</b>人数・時間・予算・アレルギー・宗教上の制限まで確認してからお電話します。席についてから話が変わることがありません。",
+         "<b>無連絡キャンセルを減らします。</b>お客様とは予約前にやり取りをしています。連絡先が取れる状態です。",
+         "<b>問題のあったお客様は、二度お取り次ぎしません。</b>お店では「一度きりの外国人のお客様」でも、私たちには記録が残ります。お店が覚えられないことを、私たちが覚えます。",
+         "<b>言語の負担がありません。</b>やり取りはすべて私たちが日本語で行います。"],
+   ask_h="お願いしたいこと",
+   ask=["お電話でご予約をお受けいただくこと。それだけです。",
+        "ご登録・契約・掲載料はありません。断っていただいても構いません。"],
+   pay_h="料金について",
+   pay=["<b>価値があったと思われた額を、お店の方からお支払いいただけます。</b>お支払いがなくてもお取り次ぎは変わりません。",
+        "<b>多くお支払いいただいても、優先的にご紹介することはありません。</b>お金で順番を売りません。売った時点で、このサービスを信頼していただく理由がなくなります。"],
+   fair_h="私たちが守ること",
+   fair=["お店を評価し、お客様も評価します。片方だけを守ることはしません。",
+         "国籍・人種・信条でお客様を選別しません。判断するのは行いだけです。",
+         "お客様の個人情報をお店にお渡しすることはありません。"],
+   cta="ご質問やご相談は、こちらからお送りください。",
+   ph="例：予約の受け方、対応できる時間帯、断りたい条件などがあればお書きください。"),
+ en=dict(title="For shops in Nagoya | Douzo",
+   h1="Take foreign bookings<br>without the risk.",
+   sub="Douzo books on behalf of visitors, in Japanese. No sign-up, no listing fee, no system to install.",
+   lead_h="What changes for you",
+   lead=["<b>Everything is agreed before we call.</b> Headcount, time, budget, allergies, religious restrictions — all confirmed first. Nothing changes at the table.",
+         "<b>Fewer no-shows.</b> We have talked with the guest before booking, and we can reach them.",
+         "<b>We do not send the same problem twice.</b> To you they are a one-time foreign guest. To us they are on record. We remember what you cannot.",
+         "<b>No language burden.</b> Every exchange with us is in Japanese."],
+   ask_h="What we ask",
+   ask=["That you take the reservation by phone. That is all.",
+        "No registration, no contract, no listing fee. You may decline any booking."],
+   pay_h="Paying",
+   pay=["<b>Pay what you think it was worth.</b> If you pay nothing, nothing changes on our side.",
+        "<b>Paying more does not buy priority.</b> We do not sell the order. If we did, there would be no reason to trust us."],
+   fair_h="What we keep",
+   fair=["We check the shops, and we check the guests. We do not protect only one side.",
+         "We never screen guests by nationality, race, or belief. Only by what they do.",
+         "We never hand a guest's personal information to a shop."],
+   cta="Questions? Send them here.",
+   ph="e.g. how you prefer to take reservations, which hours work, anything you would rather decline."),
+)
+
+def shoppage(lang):
+    v=LANGS[lang]; c=SHOP[lang]
+    def ul(items): return "".join("<li>%s</li>"%i for i in items)
+    body=f"""<h1>{c['h1']}</h1>
+<p class="sub">{html.escape(c['sub'])}</p>
+<h2 class="sec">{html.escape(c['lead_h'])}</h2>
+<ul class="why">{ul(c['lead'])}</ul>
+<h2 class="sec">{html.escape(c['ask_h'])}</h2>
+<ul class="why">{ul(c['ask'])}</ul>
+<h2 class="sec">{html.escape(c['pay_h'])}</h2>
+<ul class="why">{ul(c['pay'])}</ul>
+<h2 class="sec">{html.escape(c['fair_h'])}</h2>
+<ul class="why">{ul(c['fair'])}</ul>
+<div class="box">
+<h2>{html.escape(c['cta'])}</h2>
+<textarea id="q" placeholder="{html.escape(c['ph'])}"></textarea>
+<div class="btns">
+<button class="p" id="m" type="button">{v['btn_mail']}</button>
+<button class="s" id="c" type="button" data-done="{v['copied']}">{v['btn_copy']}</button>
+</div>
+</div>
+<a class="back" href="{SITE}/{v['dir']}/">← Douzo</a>"""
+    return shell(lang, c['title'], c['sub'], v['kw'], "%s/%s/shops/"%(SITE,v['dir']), body, "shops/")
+
 if os.path.isdir(OUT): shutil.rmtree(OUT)
 os.makedirs(OUT)
 urls=[]
@@ -325,6 +419,10 @@ for lang,v in LANGS.items():
         dd=os.path.join(d,c["slug"]); os.makedirs(dd,exist_ok=True)
         open(os.path.join(dd,"index.html"),"w",encoding="utf-8").write(catpage(lang,c))
         urls.append("%s/%s/%s/"%(SITE,v["dir"],c["slug"]))
+    if lang in SHOP:
+        sd=os.path.join(d,"shops"); os.makedirs(sd,exist_ok=True)
+        open(os.path.join(sd,"index.html"),"w",encoding="utf-8").write(shoppage(lang))
+        urls.append("%s/%s/shops/"%(SITE,v["dir"]))
 
 # 루트: 언어 자동 감지 후 이동
 open(os.path.join(OUT,"index.html"),"w",encoding="utf-8").write(f"""<!doctype html>
