@@ -6,7 +6,7 @@
 import os, json, shutil, html
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs")
-SITE = "https://hray7538-web.github.io/douzo"
+SITE = "https://yoyoi.jp"
 CONTACT = "hray7538@gmail.com"   # ← 접수받을 주소. 이 한 줄만 바꾸면 됩니다.
 
 LANGS = {
@@ -25,7 +25,7 @@ LANGS = {
    form_ph="e.g. Dinner for 2 on Friday around 7pm, near Sakae. No pork. Budget about 5,000 yen each.",
    btn_mail="Send by email", btn_copy="Copy", copied="Copied",
    note="We'll reply with the confirmation. If the first place is full, we try the next.",
-   foot="Douzo — Nagoya, Japan",
+   foot="ヨヨイ Yoyoi — Nagoya, Japan",
    trust_h='What we keep', trust=['<b>We check both sides.</b> We look at the places, and we look at the guests too.', '<b>Everything is agreed before you arrive.</b> Allergies, headcount, budget, time — we pass it all on in Japanese, so nothing breaks at the table.', "<b>We don't send the same problem twice.</b> No-shows and rudeness mean we stop booking for that person."],
    pay_h='Paying', pay=['<b>Pay what you think it was worth.</b> Guests pay. Shops pay. Either, both, or neither.', '<b>Paying more does not buy priority.</b> We will not put one guest ahead of another for money. If we did, none of this would be worth trusting.', 'It is a signal of trust, not a purchase.'],
    shop_h='For shops', shop_cta='For shops in Nagoya',
@@ -46,7 +46,7 @@ LANGS = {
    form_ph="例：金曜19時ごろ、2名、栄の近く。豚肉なし。予算はお一人5,000円くらい。",
    btn_mail="メールで送る", btn_copy="コピー", copied="コピーしました",
    note="確定のご連絡をいたします。最初のお店が満席の場合は次をお探しします。",
-   foot="Douzo — 名古屋",
+   foot="ヨヨイ Yoyoi — 名古屋",
    trust_h='私たちが守ること', trust=['<b>両方を見ます。</b>お店を評価し、お客様も評価します。', '<b>到着前にすべて合意しておきます。</b>アレルギー・人数・予算・時間を日本語でお伝えするので、席で問題が起きません。', '<b>同じ問題を二度送りません。</b>無連絡キャンセルや失礼があった方には、以後お取り次ぎしません。'],
    pay_h='料金について', pay=['<b>価値があったと思う額をお支払いください。</b>お客様が払っても、お店が払っても、どちらでも、どちらでなくても構いません。', '<b>多く払っても優先されません。</b>お金で順番を売りません。売った時点で、信頼する意味がなくなります。', 'これは購入ではなく、信頼の合図です。'],
    shop_h='お店の方へ', shop_cta='名古屋のお店の方へ',
@@ -67,7 +67,7 @@ LANGS = {
    form_ph="예: 금요일 저녁 7시쯤 2명, 사카에 근처. 돼지고기 빼고. 1인 5,000엔 정도.",
    btn_mail="메일로 보내기", btn_copy="복사", copied="복사했습니다",
    note="확정되면 연락드립니다. 첫 가게가 만석이면 다음 곳을 찾습니다.",
-   foot="Douzo — 나고야",
+   foot="ヨヨイ Yoyoi — 나고야",
    trust_h='우리가 지키는 것', trust=['<b>양쪽을 봅니다.</b> 가게를 평가하고, 손님도 평가합니다.', '<b>도착하기 전에 다 합의해 둡니다.</b> 알레르기·인원·예산·시간을 일본어로 전달해서, 자리에서 문제가 생기지 않습니다.', '<b>같은 문제를 두 번 보내지 않습니다.</b> 노쇼나 무례가 있었던 분은 이후 중개하지 않습니다.'],
    pay_h='요금', pay=['<b>값이 있었다고 생각하는 만큼 내십니다.</b> 손님이 내도, 가게가 내도, 둘 다여도, 아니어도 괜찮습니다.', '<b>많이 내도 우선순위를 살 수 없습니다.</b> 돈으로 순서를 팔지 않습니다. 파는 순간 신뢰할 이유가 없어집니다.', '구매가 아니라 신뢰의 표시입니다.'],
    shop_h='가게 하시는 분께', shop_cta='나고야 가게 하시는 분께',
@@ -88,7 +88,7 @@ LANGS = {
    form_ph="例如：星期五晚上7點左右2位，榮附近。不要豬肉。每人預算約5,000日圓。",
    btn_mail="用電子郵件寄出", btn_copy="複製", copied="已複製",
    note="確認後會通知您。如果第一家滿了，我們會找下一家。",
-   foot="Douzo — 名古屋",
+   foot="ヨヨイ Yoyoi — 名古屋",
    trust_h='我們堅持的事', trust=['<b>我們看兩邊。</b>我們評價店家，也評價客人。', '<b>到店前全部談好。</b>過敏、人數、預算、時間，我們用日語轉達，所以在座位上不會出問題。', '<b>同樣的問題不送第二次。</b>訂了不到、態度失禮的客人，之後我們不再代訂。'],
    pay_h='關於費用', pay=['<b>覺得值多少就付多少。</b>客人付、店家付、兩邊付、都不付，都可以。', '<b>付得多不會被優先。</b>我們不用錢賣順序。一旦賣了，就沒有信任的意義了。', '這不是購買，是信任的表示。'],
    shop_h='給店家', shop_cta='給名古屋的店家',
@@ -109,7 +109,7 @@ LANGS = {
    form_ph="例如：周五晚上7点左右2位，荣附近。不要猪肉。每人预算约5,000日元。",
    btn_mail="用邮件发送", btn_copy="复制", copied="已复制",
    note="确认后会通知您。如果第一家满了，我们会找下一家。",
-   foot="Douzo — 名古屋",
+   foot="ヨヨイ Yoyoi — 名古屋",
    trust_h='我们坚持的事', trust=['<b>我们看两边。</b>我们评价店家，也评价客人。', '<b>到店前全部谈好。</b>过敏、人数、预算、时间，我们用日语转达，所以在座位上不会出问题。', '<b>同样的问题不送第二次。</b>订了不到、态度失礼的客人，之后我们不再代订。'],
    pay_h='关于费用', pay=['<b>觉得值多少就付多少。</b>客人付、店家付、两边付、都不付，都可以。', '<b>付得多不会被优先。</b>我们不用钱卖顺序。一旦卖了，就没有信任的意义了。', '这不是购买，是信任的表示。'],
    shop_h='给店家', shop_cta='给名古屋的店家',
@@ -130,7 +130,7 @@ LANGS = {
    form_ph="ตัวอย่าง: วันศุกร์ประมาณ 19:00 สองคน ใกล้ซาคาเอะ ไม่กินหมู งบประมาณคนละ 5,000 เยน",
    btn_mail="ส่งทางอีเมล", btn_copy="คัดลอก", copied="คัดลอกแล้ว",
    note="เราจะแจ้งผลการยืนยัน หากร้านแรกเต็ม เราจะหาร้านถัดไป",
-   foot="Douzo — นาโกยา",
+   foot="ヨヨイ Yoyoi — นาโกยา",
    trust_h='สิ่งที่เรายึดถือ', trust=['<b>เราดูทั้งสองฝ่าย</b> เราประเมินร้าน และประเมินลูกค้าด้วย', '<b>ตกลงกันครบก่อนไปถึง</b> ภูมิแพ้ จำนวนคน งบประมาณ เวลา เราส่งต่อเป็นภาษาญี่ปุ่น จึงไม่มีปัญหาที่โต๊ะ', '<b>เราไม่ส่งปัญหาเดิมสองครั้ง</b> ผู้ที่จองแล้วไม่ไปหรือเสียมารยาท เราจะไม่จองให้อีก'],
    pay_h='เรื่องค่าบริการ', pay=['<b>จ่ายเท่าที่คุณคิดว่าคุ้ม</b> ลูกค้าจ่ายก็ได้ ร้านจ่ายก็ได้ ทั้งสองฝ่ายหรือไม่จ่ายเลยก็ได้', '<b>จ่ายมากไม่ได้สิทธิ์ก่อน</b> เราไม่ขายลำดับด้วยเงิน ถ้าขาย ก็ไม่มีเหตุให้เชื่อใจกันอีก', 'นี่ไม่ใช่การซื้อ แต่เป็นสัญญาณของความไว้ใจ'],
    shop_h='สำหรับร้านค้า', shop_cta='สำหรับร้านในนาโกยา',
@@ -189,6 +189,9 @@ CATS = [
                 "th":"ต่อขนตาและดัดขนตา จองไว้ได้ตั้งแต่ยังวางแผนทริป"})),
 ]
 
+
+WHY = {'en': ('People can speak.', 'Say what you want to do. Say what you sell. We do the connecting.'), 'ja': ('人は、話せる。', 'したいことを言えばいい。売っているものを言えばいい。つなぐのは、こちらがやります。'), 'ko': ('사람은 말은 한다.', '하고 싶은 것을 말하면 됩니다. 파는 것을 말하면 됩니다. 잇는 것은 우리가 합니다.'), 'zh-hant': ('人，是會說話的。', '想做什麼，說出來就好。賣什麼，說出來就好。連起來，由我們來做。'), 'zh-hans': ('人，是会说话的。', '想做什么，说出来就好。卖什么，说出来就好。连起来，由我们来做。'), 'th': ('คนเราพูดได้', 'อยากทำอะไรก็บอกมา ขายอะไรก็บอกมา ส่วนการเชื่อมต่อ เราจัดการเอง')}
+
 CSS = """*{box-sizing:border-box}
 :root{--bg:#fbfaf8;--fg:#1a1917;--mut:#6b6862;--line:#e6e2db;--card:#fff;--acc:#b8442e;--accs:#f5ede9}
 :root:not([data-theme=light]){}
@@ -204,6 +207,9 @@ header{padding:1.1rem 0;border-bottom:1px solid var(--line)}
 .langs{display:flex;flex-wrap:wrap;gap:.1rem .55rem;font-size:.8rem}
 .langs a{color:var(--mut);text-decoration:none;white-space:nowrap}
 .langs a:hover,.langs a[aria-current]{color:var(--acc)}
+.why-hero{margin:2.4rem 0 .4rem;padding:1.1rem 0 1.2rem;border-top:2px solid var(--acc);border-bottom:1px solid var(--line)}
+.why-hero b{display:block;font-size:clamp(1.3rem,4.5vw,1.75rem);line-height:1.35;letter-spacing:-.01em;margin-bottom:.5rem}
+.why-hero span{color:var(--mut);font-size:.98rem;line-height:1.75}
 h1{font-size:clamp(1.9rem,7vw,3rem);line-height:1.22;margin:2.6rem 0 1rem;letter-spacing:-.01em}
 .sub{font-size:1.06rem;color:var(--mut);margin:0 0 1.6rem;max-width:32rem}
 .chips{display:flex;flex-wrap:wrap;gap:.45rem;margin:0 0 2.4rem;padding:0;list-style:none}
@@ -241,7 +247,7 @@ var t=document.getElementById('q'),m=document.getElementById('m'),c=document.get
 if(!t)return;
 function body(){return encodeURIComponent(t.value||'');}
 if(m)m.addEventListener('click',function(){
-  location.href='mailto:%s?subject='+encodeURIComponent('Douzo — booking request')+'&body='+body();});
+  location.href='mailto:%s?subject='+encodeURIComponent('Yoyoi — booking request')+'&body='+body();});
 if(c)c.addEventListener('click',function(){
   var d=c.getAttribute('data-done')||'Copied';
   navigator.clipboard.writeText(t.value||'').then(function(){var o=c.textContent;c.textContent=d;setTimeout(function(){c.textContent=o},1600)});});
@@ -280,7 +286,7 @@ def shell(lang, title, desc, kw, canon, body, sub=""):
 </head>
 <body>
 <header><div class="wrap"><div class="hrow">
-<a class="logo" href="{SITE}/{v['dir']}/">Douzo<span>.</span></a>
+<a class="logo" href="{SITE}/{v['dir']}/">ヨヨイ<span>.</span></a>
 {langbar(lang, sub)}
 </div></div></header>
 <main class="wrap">
@@ -315,7 +321,9 @@ def home(lang):
     guides="".join('<li><a href="%s/%s/guide/%s/"><b>%s</b><small>%s</small></a></li>'%(
         SITE,v["dir"],g["slug"],html.escape(g["t"][lang]),html.escape(g["d"][lang])) for g in GUIDES)
     steps="".join("<li><b>%s</b><span>%s</span></li>"%(html.escape(a),html.escape(b)) for a,b in v["steps"])
-    body=f"""<h1>{v['tagline']}</h1>
+    w=WHY[lang]
+    body=f"""<div class="why-hero"><b>{html.escape(w[0])}</b><span>{html.escape(w[1])}</span></div>
+<h1>{v['tagline']}</h1>
 <p class="sub">{v['sub']}</p>
 <ul class="chips">{"".join("<li>%s</li>"%html.escape(p) for p in v['promise'])}</ul>
 {formbox(v)}
@@ -332,7 +340,7 @@ def home(lang):
 <ul class="cats">{guides}</ul>
 <ul class="cats"><li><a href="{SITE}/{shoplang(lang)}/shops/"><b>{html.escape(v['shop_cta'])}</b><small>{html.escape(v['shop_h'])}</small></a></li></ul>"""
     body=body.replace('<h2 class="sec"></h2>','')
-    t = "Douzo — %s" % (v["tagline"].replace("<br>"," ").strip())
+    t = "ヨヨイ Yoyoi — %s" % (v["tagline"].replace("<br>"," ").strip())
     return shell(lang, t, v["sub"], v["kw"], "%s/%s/"%(SITE,v["dir"]), body, "")
 
 def catpage(lang, c):
@@ -343,14 +351,14 @@ def catpage(lang, c):
 {formbox(v)}
 <h2 class="sec">{html.escape(v['why_h'])}</h2>
 <ul class="why">{"".join("<li>%s</li>"%w for w in v['why'])}</ul>
-<a class="back" href="{SITE}/{v['dir']}/">← Douzo</a>"""
-    return shell(lang, "%s | Douzo"%c["t"][lang], c["d"][lang], v["kw"], "%s/%s/%s/"%(SITE,v["dir"],c["slug"]), body, c["slug"]+"/")
+<a class="back" href="{SITE}/{v['dir']}/">← ヨヨイ</a>"""
+    return shell(lang, "%s | ヨヨイ"%c["t"][lang], c["d"][lang], v["kw"], "%s/%s/%s/"%(SITE,v["dir"],c["slug"]), body, c["slug"]+"/")
 
 
 SHOP = dict(
- ja=dict(title="名古屋のお店の方へ | Douzo",
+ ja=dict(title="名古屋のお店の方へ | ヨヨイ",
    h1="外国人のご予約を、<br>安心して受けられるように。",
-   sub="Douzo は、訪日のお客様に代わって日本語でご予約をお取りするサービスです。お店側のご登録・掲載料・システム導入は一切不要です。",
+   sub="ヨヨイ（Yoyoi）は、訪日のお客様に代わって日本語でご予約をお取りするサービスです。お店側のご登録・掲載料・システム導入は一切不要です。",
    lead_h="お店にとって何が変わるか",
    lead=["<b>条件は事前にすべて合意済みです。</b>人数・時間・予算・アレルギー・宗教上の制限まで確認してからお電話します。席についてから話が変わることがありません。",
          "<b>無連絡キャンセルを減らします。</b>お客様とは予約前にやり取りをしています。連絡先が取れる状態です。",
@@ -368,9 +376,9 @@ SHOP = dict(
          "お客様の個人情報をお店にお渡しすることはありません。"],
    cta="ご質問やご相談は、こちらからお送りください。",
    ph="例：予約の受け方、対応できる時間帯、断りたい条件などがあればお書きください。"),
- en=dict(title="For shops in Nagoya | Douzo",
+ en=dict(title="For shops in Nagoya | ヨヨイ",
    h1="Take foreign bookings<br>without the risk.",
-   sub="Douzo books on behalf of visitors, in Japanese. No sign-up, no listing fee, no system to install.",
+   sub="Yoyoi books on behalf of visitors, in Japanese. No sign-up, no listing fee, no system to install.",
    lead_h="What changes for you",
    lead=["<b>Everything is agreed before we call.</b> Headcount, time, budget, allergies, religious restrictions — all confirmed first. Nothing changes at the table.",
          "<b>Fewer no-shows.</b> We have talked with the guest before booking, and we can reach them.",
@@ -411,7 +419,7 @@ def shoppage(lang):
 <button class="s" id="c" type="button" data-done="{v['copied']}">{v['btn_copy']}</button>
 </div>
 </div>
-<a class="back" href="{SITE}/{v['dir']}/">← Douzo</a>"""
+<a class="back" href="{SITE}/{v['dir']}/">← ヨヨイ</a>"""
     return shell(lang, c['title'], c['sub'], v['kw'], "%s/%s/shops/"%(SITE,v['dir']), body, "shops/")
 
 
@@ -606,9 +614,9 @@ def listpage(lang, item, kind):
 <ul class="chips">{"".join("<li>%s</li>"%html.escape(p) for p in v['promise'])}</ul>
 {formbox(v)}
 {inner}
-<a class="back" href="{SITE}/{v['dir']}/">← Douzo</a>"""
+<a class="back" href="{SITE}/{v['dir']}/">← ヨヨイ</a>"""
     sub = "%s/%s/" % (kind, item["slug"])
-    return shell(lang, "%s | Douzo"%item["t"][lang], item["d"][lang], v["kw"],
+    return shell(lang, "%s | ヨヨイ"%item["t"][lang], item["d"][lang], v["kw"],
                  "%s/%s/%s"%(SITE,v["dir"],sub), body, sub)
 
 if os.path.isdir(OUT): shutil.rmtree(OUT)
@@ -639,7 +647,7 @@ for lang,v in LANGS.items():
 open(os.path.join(OUT,"index.html"),"w",encoding="utf-8").write(f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Douzo — Nagoya bookings, in your language</title>
+<title>ヨヨイ Yoyoi — Nagoya bookings, in your language</title>
 <meta name="description" content="Just write what you want. We book restaurants, hair salons and nail salons in Nagoya — even the ones that only take phone reservations in Japanese.">
 <link rel="canonical" href="{SITE}/en/">
 {alts("")}
@@ -650,7 +658,8 @@ if(l.indexOf('zh')===0){{d=(l.indexOf('cn')>-1||l.indexOf('hans')>-1||l.indexOf(
 else{{for(var k in m){{if(l.indexOf(k)===0)d=m[k];}}}}
 location.replace('{SITE}/'+d+'/');}})();
 </script></head>
-<body><main class="wrap"><h1>Douzo<span style="color:var(--acc)">.</span></h1>
+<body><main class="wrap"><h1>ヨヨイ<span style="color:var(--acc)">.</span></h1>
+<p style="color:var(--mut);margin:-.6rem 0 1rem">Yoyoi</p>
 <p class="sub">Nagoya bookings, in your language.</p>
 <ul class="cats">{"".join('<li><a href="%s/%s/"><b>%s</b></a></li>'%(SITE,v["dir"],html.escape(v["name"])) for v in LANGS.values())}</ul>
 </main></body></html>""")
@@ -660,4 +669,5 @@ open(os.path.join(OUT,"sitemap.xml"),"w",encoding="utf-8").write(
  + "".join("<url><loc>%s</loc></url>\n"%u for u in urls) + "</urlset>\n")
 open(os.path.join(OUT,"robots.txt"),"w",encoding="utf-8").write("User-agent: *\nAllow: /\nSitemap: %s/sitemap.xml\n"%SITE)
 open(os.path.join(OUT,".nojekyll"),"w").write("")
+open(os.path.join(OUT,"CNAME"),"w").write("yoyoi.jp\n")
 print("생성 완료: %d 페이지 (언어 %d × 업종 %d + 홈)" % (len(urls)+1, len(LANGS), len(CATS)))

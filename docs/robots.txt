@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://hray7538-web.github.io/douzo/sitemap.xml
+Sitemap: https://yoyoi.jp/sitemap.xml
