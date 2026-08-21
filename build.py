@@ -310,6 +310,10 @@ def home(lang):
     v=LANGS[lang]
     cats="".join('<li><a href="%s/%s/%s/"><b>%s</b><small>%s</small></a></li>'%(
         SITE,v["dir"],c["slug"],html.escape(c["t"][lang]),html.escape(c["d"][lang])) for c in CATS)
+    areas="".join('<li><a href="%s/%s/area/%s/"><b>%s</b><small>%s</small></a></li>'%(
+        SITE,v["dir"],a["slug"],html.escape(a["t"][lang]),html.escape(a["d"][lang])) for a in AREAS)
+    guides="".join('<li><a href="%s/%s/guide/%s/"><b>%s</b><small>%s</small></a></li>'%(
+        SITE,v["dir"],g["slug"],html.escape(g["t"][lang]),html.escape(g["d"][lang])) for g in GUIDES)
     steps="".join("<li><b>%s</b><span>%s</span></li>"%(html.escape(a),html.escape(b)) for a,b in v["steps"])
     body=f"""<h1>{v['tagline']}</h1>
 <p class="sub">{v['sub']}</p>
@@ -324,6 +328,8 @@ def home(lang):
 <h2 class="sec">{html.escape(v['pay_h'])}</h2>
 <ul class="why">{"".join("<li>%s</li>"%w for w in v['pay'])}</ul>
 <ul class="cats">{cats}</ul>
+<ul class="cats">{areas}</ul>
+<ul class="cats">{guides}</ul>
 <ul class="cats"><li><a href="{SITE}/{shoplang(lang)}/shops/"><b>{html.escape(v['shop_cta'])}</b><small>{html.escape(v['shop_h'])}</small></a></li></ul>"""
     body=body.replace('<h2 class="sec"></h2>','')
     t = "Douzo — %s" % (v["tagline"].replace("<br>"," ").strip())
@@ -408,6 +414,203 @@ def shoppage(lang):
 <a class="back" href="{SITE}/{v['dir']}/">← Douzo</a>"""
     return shell(lang, c['title'], c['sub'], v['kw'], "%s/%s/shops/"%(SITE,v['dir']), body, "shops/")
 
+
+# ── 지역 페이지 ──────────────────────────────────────────
+AREAS = [
+ dict(slug="sakae", t=dict(en="Sakae & Yabacho", ja="栄・矢場町", ko="사카에·야바초",
+      **{"zh-hant":"榮・矢場町","zh-hans":"荣・矢场町","th":"ซาคาเอะ・ยาบาโจ"}),
+   d=dict(en="Nagoya's densest block for salons, izakaya and late dinner. Also where the smallest places answer the phone and nothing else.",
+          ja="サロン・居酒屋・遅い夕食が最も密集する一帯。電話しか受けていない小さな店も一番多い場所です。",
+          ko="살롱·이자카야·늦은 저녁이 가장 빽빽한 곳. 전화만 받는 작은 가게도 여기 제일 많습니다.",
+          **{"zh-hant":"美容院、居酒屋、深夜晚餐最密集的一帶。只接電話的小店也最多。",
+             "zh-hans":"美容院、居酒屋、深夜晚餐最密集的一带。只接电话的小店也最多。",
+             "th":"ย่านที่ร้านเสริมสวย อิซากายะ และร้านอาหารดึกหนาแน่นที่สุด และมีร้านเล็กที่รับแต่โทรศัพท์มากที่สุด"})),
+ dict(slug="nagoya-station", t=dict(en="Nagoya Station", ja="名古屋駅", ko="나고야역",
+      **{"zh-hant":"名古屋車站","zh-hans":"名古屋车站","th":"สถานีนาโกยา"}),
+   d=dict(en="First and last stop of most trips. Good for a meal with luggage, or a salon slot before the Shinkansen.",
+          ja="多くの旅の最初と最後。荷物を持ったままの食事、新幹線前のサロン枠に向いています。",
+          ko="여행의 처음과 마지막. 짐 들고 먹는 식사, 신칸센 전 살롱 예약에 좋습니다.",
+          **{"zh-hant":"多數旅程的起點與終點。適合帶著行李用餐，或搭新幹線前的沙龍時段。",
+             "zh-hans":"多数旅程的起点与终点。适合带着行李用餐，或搭新干线前的沙龙时段。",
+             "th":"จุดเริ่มและจุดจบของทริปส่วนใหญ่ เหมาะกับมื้ออาหารพร้อมกระเป๋า หรือคิวร้านเสริมสวยก่อนขึ้นชินคันเซ็น"})),
+ dict(slug="osu", t=dict(en="Osu", ja="大須", ko="오스",
+      **{"zh-hant":"大須","zh-hans":"大须","th":"โอสุ"}),
+   d=dict(en="Old shopping arcade, small independent shops, cheap and alive. Many owners run the place alone and take bookings by phone.",
+          ja="古い商店街と個人店。安くて活気があります。店主が一人で回していて、予約は電話だけという店が多い場所です。",
+          ko="오래된 상점가와 개인 가게들. 싸고 활기 있습니다. 사장님 혼자 운영하고 예약은 전화만 받는 곳이 많습니다.",
+          **{"zh-hant":"老商店街與個人小店，便宜又有活力。很多是老闆一人經營，只用電話接受預約。",
+             "zh-hans":"老商店街与个人小店，便宜又有活力。很多是老板一人经营，只用电话接受预约。",
+             "th":"ย่านการค้าเก่าและร้านเล็กอิสระ ราคาถูกและคึกคัก หลายร้านเจ้าของดูแลคนเดียวและรับจองทางโทรศัพท์เท่านั้น"})),
+ dict(slug="kanayama", t=dict(en="Kanayama", ja="金山", ko="가나야마",
+      **{"zh-hant":"金山","zh-hans":"金山","th":"คานายามะ"}),
+   d=dict(en="Transfer hub. Locals eat here rather than tourists, which is exactly why it is worth booking ahead.",
+          ja="乗換の要所。観光客より地元の人が食べる場所です。だからこそ予約しておく価値があります。",
+          ko="환승 요지. 관광객보다 현지 사람이 먹는 곳입니다. 그래서 미리 잡아둘 값이 있습니다.",
+          **{"zh-hant":"轉乘要地。比起觀光客，這裡是在地人吃飯的地方，所以更值得先訂位。",
+             "zh-hans":"转乘要地。比起观光客，这里是本地人吃饭的地方，所以更值得先订位。",
+             "th":"จุดเปลี่ยนรถสำคัญ คนท้องถิ่นมากินมากกว่านักท่องเที่ยว จึงยิ่งควรจองล่วงหน้า"})),
+ dict(slug="imaike", t=dict(en="Imaike", ja="今池", ko="이마이케",
+      **{"zh-hant":"今池","zh-hans":"今池","th":"อิมาอิเกะ"}),
+   d=dict(en="Night town with small counters and music bars. Almost nothing here is on an English booking site.",
+          ja="小さなカウンターと音楽の店が並ぶ夜の街。英語の予約サイトにはほとんど載っていません。",
+          ko="작은 카운터와 음악 가게가 있는 밤의 동네. 영어 예약 사이트에는 거의 없습니다.",
+          **{"zh-hant":"小吧檯與音樂酒吧的夜之街。這裡幾乎沒有店家出現在英文訂位網站上。",
+             "zh-hans":"小吧台与音乐酒吧的夜之街。这里几乎没有店家出现在英文订位网站上。",
+             "th":"ย่านกลางคืนที่มีเคาน์เตอร์เล็กและบาร์ดนตรี แทบไม่มีร้านไหนอยู่บนเว็บจองภาษาอังกฤษ"})),
+]
+
+# ── 실용 가이드 ─────────────────────────────────────────
+GUIDES = [
+ dict(slug="allergies", t=dict(en="Telling a Japanese restaurant about allergies", ja="アレルギーの伝え方",
+      ko="일본 음식점에 알레르기 알리는 법", **{"zh-hant":"如何告知日本餐廳過敏","zh-hans":"如何告知日本餐厅过敏","th":"วิธีแจ้งภูมิแพ้กับร้านอาหารญี่ปุ่น"}),
+   d=dict(en="Say it when you book, not when you sit down. Small kitchens buy for the day.",
+          ja="席に着いてからではなく、予約のときに伝えます。小さな厨房はその日の分だけ仕入れます。",
+          ko="앉아서가 아니라 예약할 때 말합니다. 작은 주방은 그날 것만 사둡니다。",
+          **{"zh-hant":"訂位時就要說，不是坐下才說。小廚房只採購當天的份量。",
+             "zh-hans":"订位时就要说，不是坐下才说。小厨房只采购当天的份量。",
+             "th":"บอกตอนจอง ไม่ใช่ตอนนั่งลง ครัวเล็กซื้อวัตถุดิบแค่พอวันนั้น"}),
+   b=dict(en=["<b>Book-time, not table-time.</b> A small kitchen has already bought the fish for tonight. If you say it at the table, the honest answer is often \"we cannot serve you\".",
+              "<b>Name the ingredient, not the diet.</b> \"No pork, including broth and lard\" travels better than \"halal\". \"No dashi made from fish\" travels better than \"vegetarian\" — dashi is in almost everything.",
+              "<b>Say how serious it is.</b> Japanese kitchens treat a medical allergy and a preference very differently, and they will ask.",
+              "<b>Some places will say no.</b> That is not rudeness. A counter with one chef cannot guarantee separation. We will find one that can."],
+       ja=["<b>席ではなく予約のときに。</b>小さな厨房は今夜の分をもう仕入れています。席で言われると「お出しできません」が正直な答えになります。",
+           "<b>食べられない「食材」で伝えます。</b>「ハラル」より「豚肉不可。だしやラードも含む」。「ベジタリアン」より「魚のだし不可」。だしはほとんどの料理に入っています。",
+           "<b>重さを伝えます。</b>医学的なアレルギーと好みでは扱いがまったく違います。必ず聞かれます。",
+           "<b>断られることもあります。</b>失礼ではありません。一人で回すカウンターでは分離を保証できないからです。できるお店を探します。"],
+       ko=["<b>앉아서가 아니라 예약할 때.</b> 작은 주방은 오늘 저녁 분을 이미 사뒀습니다. 자리에서 말하면 「못 드립니다」가 정직한 답이 됩니다.",
+           "<b>못 먹는 「재료」로 말합니다.</b> 「할랄」보다 「돼지고기 불가, 육수·라드 포함」. 「채식」보다 「생선 다시 불가」 — 다시는 거의 모든 요리에 들어갑니다.",
+           "<b>얼마나 심한지 말합니다.</b> 일본 주방은 의학적 알레르기와 취향을 완전히 다르게 다룹니다. 반드시 물어봅니다.",
+           "<b>거절당할 수도 있습니다.</b> 무례한 게 아닙니다. 혼자 하는 카운터는 분리를 보장할 수 없으니까요. 되는 가게를 찾아 드립니다."],
+       **{"zh-hant":["<b>訂位時說，不是入座才說。</b>小廚房今晚的食材已經買好了。坐下才說，得到的誠實答案往往是「無法為您準備」。",
+                     "<b>用「食材」表達，不要用「飲食法」。</b>「不吃豬肉，含高湯與豬油」比「清真」好用。「不能有魚高湯」比「素食」好用——高湯幾乎在每道菜裡。",
+                     "<b>說明嚴重程度。</b>日本廚房對醫療過敏與個人偏好處理完全不同，而且一定會問。",
+                     "<b>有些店會拒絕。</b>那不是無禮。一位師傅的吧檯無法保證分離作業。我們幫您找做得到的店。"],
+          "zh-hans":["<b>订位时说，不是入座才说。</b>小厨房今晚的食材已经买好了。坐下才说，得到的诚实答案往往是「无法为您准备」。",
+                     "<b>用「食材」表达，不要用「饮食法」。</b>「不吃猪肉，含高汤与猪油」比「清真」好用。「不能有鱼高汤」比「素食」好用——高汤几乎在每道菜里。",
+                     "<b>说明严重程度。</b>日本厨房对医疗过敏与个人偏好处理完全不同，而且一定会问。",
+                     "<b>有些店会拒绝。</b>那不是无礼。一位师傅的吧台无法保证分离作业。我们帮您找做得到的店。"],
+          "th":["<b>บอกตอนจอง ไม่ใช่ตอนนั่ง</b> ครัวเล็กซื้อวัตถุดิบของคืนนี้ไว้แล้ว ถ้าบอกตอนนั่งโต๊ะ คำตอบที่ตรงไปตรงมามักคือ ‘เสิร์ฟให้ไม่ได้’",
+                "<b>บอกเป็น ‘วัตถุดิบ’ ไม่ใช่ ‘ประเภทอาหาร’</b> ‘ไม่กินหมู รวมน้ำซุปและน้ำมันหมู’ สื่อสารได้ดีกว่า ‘ฮาลาล’ และ ‘ไม่ใส่ดาชิปลา’ ดีกว่า ‘มังสวิรัติ’ เพราะดาชิอยู่ในเกือบทุกจาน",
+                "<b>บอกว่ารุนแรงแค่ไหน</b> ครัวญี่ปุ่นแยกชัดระหว่างภูมิแพ้ทางการแพทย์กับความชอบส่วนตัว และเขาจะถาม",
+                "<b>บางร้านจะปฏิเสธ</b> ไม่ใช่ความหยาบคาย เคาน์เตอร์ที่มีเชฟคนเดียวรับประกันการแยกวัตถุดิบไม่ได้ เราจะหาร้านที่ทำได้ให้"]})),
+ dict(slug="no-show", t=dict(en="If your plans change", ja="予定が変わったら", ko="계획이 바뀌면",
+      **{"zh-hant":"如果計畫有變","zh-hans":"如果计划有变","th":"ถ้าแผนเปลี่ยน"}),
+   d=dict(en="Tell us. One message saves a small restaurant a real loss — and keeps the door open for the next traveller.",
+          ja="ひと言だけください。小さなお店の実損が消え、次の旅行者のために扉が開いたままになります。",
+          ko="한 마디만 주세요. 작은 가게의 실제 손실이 사라지고, 다음 여행자를 위해 문이 열린 채로 남습니다.",
+          **{"zh-hant":"跟我們說一聲。一則訊息就能免除小店的實際損失，也讓門為下一位旅客留著。",
+             "zh-hans":"跟我们说一声。一条消息就能免除小店的实际损失，也让门为下一位旅客留着。",
+             "th":"บอกเราสักคำ ข้อความเดียวช่วยร้านเล็กไม่ให้ขาดทุนจริง และทำให้ประตูยังเปิดไว้ให้นักเดินทางคนต่อไป"}),
+   b=dict(en=["<b>A no-show is not an empty chair. It is food already bought and staff already scheduled.</b> Many places in Nagoya seat eight people. One missing table is a whole evening.",
+              "<b>This is why shops stop taking foreign bookings.</b> Not language — risk. Every time it happens, a door closes for everyone who comes after you.",
+              "<b>Just message us.</b> Any time, any language, no explanation needed. We will call and cancel properly in Japanese.",
+              "<b>We keep a record.</b> If someone does not show and does not tell us, we stop booking for them. That is how we can promise shops that our guests are safe to accept."],
+       ja=["<b>無連絡キャンセルは空席ではありません。</b>仕入れ済みの食材と、組んでしまった人の時間です。名古屋には八席のお店がたくさんあります。一卓は一晩に相当します。",
+           "<b>だからお店は外国人の予約をやめます。</b>言葉ではなくリスクです。一度起きるたび、あとから来る人のために扉が一つ閉まります。",
+           "<b>ひと言くだされば十分です。</b>いつでも、どの言語でも、理由も要りません。こちらから日本語できちんとお断りします。",
+           "<b>記録は残します。</b>連絡なくお越しにならなかった方には、以後お取り次ぎしません。だからこそお店に「うちのお客様は大丈夫です」と言えます。"],
+       ko=["<b>노쇼는 빈자리가 아닙니다.</b> 이미 사둔 재료이고, 이미 짜둔 사람의 시간입니다. 나고야에는 여덟 자리짜리 가게가 많습니다. 한 테이블이 하룻밤입니다.",
+           "<b>그래서 가게가 외국인 예약을 그만둡니다.</b> 언어가 아니라 위험 때문입니다. 한 번 일어날 때마다 뒤에 오는 사람들을 위한 문이 하나 닫힙니다.",
+           "<b>한 마디만 주시면 됩니다.</b> 언제든, 어떤 말로든, 이유도 필요 없습니다. 저희가 일본어로 제대로 취소해 드립니다.",
+           "<b>기록은 남깁니다.</b> 연락 없이 안 오신 분은 이후 중개하지 않습니다. 그래야 가게에 「우리 손님은 괜찮습니다」라고 말할 수 있습니다."],
+       **{"zh-hant":["<b>訂了不到不是一個空位。</b>那是已經買好的食材與已經排好的人力。名古屋很多店只有八個座位，少一桌就是一整晚。",
+                     "<b>所以店家才不再接外國人訂位。</b>不是語言，是風險。每發生一次，就為後面來的人關上一道門。",
+                     "<b>跟我們說一聲就好。</b>任何時間、任何語言，不需要理由。我們會用日語替您好好取消。",
+                     "<b>我們會留紀錄。</b>沒到又沒通知的客人，之後我們不再代訂。這樣我們才能對店家說「我們的客人可以放心接」。"],
+          "zh-hans":["<b>订了不到不是一个空位。</b>那是已经买好的食材与已经排好的人力。名古屋很多店只有八个座位，少一桌就是一整晚。",
+                     "<b>所以店家才不再接外国人订位。</b>不是语言，是风险。每发生一次，就为后面来的人关上一道门。",
+                     "<b>跟我们说一声就好。</b>任何时间、任何语言，不需要理由。我们会用日语替您好好取消。",
+                     "<b>我们会留记录。</b>没到又没通知的客人，之后我们不再代订。这样我们才能对店家说「我们的客人可以放心接」。"],
+          "th":["<b>การจองแล้วไม่มา ไม่ใช่แค่เก้าอี้ว่าง</b> แต่คือวัตถุดิบที่ซื้อไว้แล้วและคนที่จัดเวรไว้แล้ว ร้านในนาโกยาหลายแห่งมีแค่แปดที่นั่ง หายไปหนึ่งโต๊ะคือทั้งคืน",
+                "<b>นี่คือเหตุผลที่ร้านเลิกรับจองจากชาวต่างชาติ</b> ไม่ใช่เรื่องภาษา แต่เป็นความเสี่ยง ทุกครั้งที่เกิดขึ้น ประตูจะปิดลงหนึ่งบานสำหรับคนที่มาทีหลัง",
+                "<b>บอกเราสักคำก็พอ</b> เวลาไหนก็ได้ ภาษาอะไรก็ได้ ไม่ต้องอธิบาย เราจะโทรยกเลิกเป็นภาษาญี่ปุ่นให้เรียบร้อย",
+                "<b>เราเก็บบันทึกไว้</b> ผู้ที่ไม่มาและไม่แจ้ง เราจะไม่จองให้อีก นั่นคือเหตุผลที่เราบอกร้านได้ว่าลูกค้าของเราปลอดภัยที่จะรับ"]})),
+ dict(slug="counter-seats", t=dict(en="Counter seats and why they are hard to book", ja="カウンター席が取りにくい理由",
+      ko="카운터석이 잡기 어려운 이유", **{"zh-hant":"為什麼吧檯座位難訂","zh-hans":"为什么吧台座位难订","th":"ทำไมที่นั่งเคาน์เตอร์จองยาก"}),
+   d=dict(en="Eight seats, one chef, one phone. That is the whole system — and it is why these are the best meals in the city.",
+          ja="八席、料理人一人、電話一台。それが仕組みのすべてで、だからこそ街で一番いい食事になります。",
+          ko="여덟 자리, 요리사 한 명, 전화 한 대. 그게 시스템 전부이고, 그래서 도시에서 제일 좋은 식사가 됩니다.",
+          **{"zh-hant":"八個座位、一位師傅、一支電話。整套系統就是這樣——也正因如此，那是城裡最好的一餐。",
+             "zh-hans":"八个座位、一位师傅、一支电话。整套系统就是这样——也正因如此，那是城里最好的一餐。",
+             "th":"แปดที่นั่ง เชฟหนึ่งคน โทรศัพท์หนึ่งเครื่อง นั่นคือทั้งระบบ และนั่นคือเหตุผลที่มันคืออาหารมื้อที่ดีที่สุดในเมือง"}),
+   b=dict(en=["<b>There is no system to put online.</b> The chef is cooking. The phone rings between orders. Adding a booking site would mean hiring someone.",
+              "<b>Ask early.</b> Two to four weeks ahead for the good ones. Same-day is possible but it is luck.",
+              "<b>Be exact about the number.</b> One extra person is 12% of the room. Changing it later is not a small change.",
+              "<b>Arrive on time, not early.</b> There is usually nowhere to wait."],
+       ja=["<b>オンラインにする仕組みがそもそもありません。</b>料理人は調理しています。電話は注文の合間に鳴ります。予約サイトを入れるとは、人を雇うということです。",
+           "<b>早めに。</b>良いお店は二〜四週間前。当日も不可能ではありませんが運です。",
+           "<b>人数は正確に。</b>一人増えると席の12%です。あとからの変更は小さな変更ではありません。",
+           "<b>早すぎず、時間ちょうどに。</b>待つ場所がないことがほとんどです。"],
+       ko=["<b>온라인으로 올릴 시스템이 애초에 없습니다.</b> 요리사는 요리 중입니다. 전화는 주문 사이에 울립니다. 예약 사이트를 넣는다는 건 사람을 뽑는다는 뜻입니다.",
+           "<b>일찍 물어보세요.</b> 좋은 곳은 2~4주 전. 당일도 가능하지만 운입니다.",
+           "<b>인원은 정확히.</b> 한 명이 늘면 좌석의 12%입니다. 나중에 바꾸는 건 작은 변경이 아닙니다.",
+           "<b>일찍 말고 정시에.</b> 대개 기다릴 곳이 없습니다."],
+       **{"zh-hant":["<b>根本沒有可以上線的系統。</b>師傅在做菜，電話在點單的空檔響。要導入訂位網站，等於要多請一個人。",
+                     "<b>早點問。</b>好店要提前兩到四週。當天也不是不可能，但看運氣。",
+                     "<b>人數要準確。</b>多一個人就是全場的12%。事後更動不是小事。",
+                     "<b>準時，不要太早。</b>多數店沒有可以等的地方。"],
+          "zh-hans":["<b>根本没有可以上线的系统。</b>师傅在做菜，电话在点单的空档响。要导入订位网站，等于要多请一个人。",
+                     "<b>早点问。</b>好店要提前两到四周。当天也不是不可能，但看运气。",
+                     "<b>人数要准确。</b>多一个人就是全场的12%。事后更动不是小事。",
+                     "<b>准时，不要太早。</b>多数店没有可以等的地方。"],
+          "th":["<b>ไม่มีระบบให้ขึ้นออนไลน์ตั้งแต่แรก</b> เชฟกำลังทำอาหาร โทรศัพท์ดังในช่วงว่างระหว่างออเดอร์ การเพิ่มเว็บจองหมายถึงต้องจ้างคนเพิ่ม",
+                "<b>ถามแต่เนิ่นๆ</b> ร้านดีควรล่วงหน้าสองถึงสี่สัปดาห์ วันต่อวันก็เป็นไปได้แต่ต้องอาศัยดวง",
+                "<b>จำนวนคนต้องแม่น</b> เพิ่มหนึ่งคนคือ 12% ของทั้งร้าน การเปลี่ยนทีหลังไม่ใช่เรื่องเล็ก",
+                "<b>มาตรงเวลา อย่ามาเร็วเกิน</b> ส่วนใหญ่ไม่มีที่ให้รอ"]})),
+ dict(slug="salon-photos", t=dict(en="Bring a photo to the salon", ja="サロンには写真を", ko="살롱에는 사진을",
+      **{"zh-hant":"到沙龍請帶照片","zh-hans":"到沙龙请带照片","th":"พกรูปไปร้านเสริมสวย"}),
+   d=dict(en="Words for hair and nails do not survive translation. A picture does.",
+          ja="髪とネイルの言葉は翻訳を越えられません。写真は越えます。",
+          ko="머리와 네일의 말은 번역을 넘지 못합니다. 사진은 넘습니다.",
+          **{"zh-hant":"頭髮和美甲的用語翻譯不過去，照片可以。",
+             "zh-hans":"头发和美甲的用语翻译不过去，照片可以。",
+             "th":"คำศัพท์เรื่องผมและเล็บข้ามภาษาไม่ได้ แต่รูปข้ามได้"}),
+   b=dict(en=["<b>Send us the photo when you book.</b> We ask the salon whether they can do it, and how long it takes, before you go.",
+              "<b>Length matters more than you think.</b> Gel, extensions and colour corrections can take three hours. We confirm the time so you do not lose an afternoon.",
+              "<b>Ask about your hair type.</b> Not every salon works with every texture. Better to know before the chair than in it.",
+              "<b>Prices are usually per-item.</b> Cut, wash, colour, treatment are often separate. We ask for the total in advance."],
+       ja=["<b>予約のときに写真をお送りください。</b>できるかどうか、どれくらいかかるかを、行く前にサロンに確認します。",
+           "<b>所要時間は思ったより長いです。</b>ジェル、エクステ、カラーの補正は三時間かかることもあります。午後を失わないよう先に確認します。",
+           "<b>髪質のことも聞いておきます。</b>どのサロンもすべての髪質を扱えるわけではありません。座る前に分かるほうがいいです。",
+           "<b>料金は多くが単品計算です。</b>カット・シャンプー・カラー・トリートメントが別々のことがよくあります。総額を先に聞いておきます。"],
+       ko=["<b>예약할 때 사진을 보내주세요.</b> 가능한지, 얼마나 걸리는지 가시기 전에 살롱에 확인합니다.",
+           "<b>시간이 생각보다 깁니다.</b> 젤·연장·컬러 보정은 세 시간이 걸리기도 합니다. 오후를 잃지 않도록 미리 확인합니다.",
+           "<b>모발 타입도 물어봅니다.</b> 모든 살롱이 모든 모질을 다루지는 않습니다. 앉기 전에 아는 편이 낫습니다.",
+           "<b>요금은 대개 항목별입니다.</b> 컷·샴푸·컬러·트리트먼트가 따로인 경우가 많습니다. 총액을 미리 물어봅니다."],
+       **{"zh-hant":["<b>訂位時把照片傳給我們。</b>我們會在您出發前，先問沙龍做不做得到、要多久。",
+                     "<b>時間比想像中長。</b>光療、接髮、染髮矯色可能要三小時。我們先確認，免得您損失一個下午。",
+                     "<b>髮質也會先問。</b>不是每家沙龍都處理得了所有髮質。坐下前知道比較好。",
+                     "<b>價格多半是分項計算。</b>剪、洗、染、護常常分開算。我們會先問總價。"],
+          "zh-hans":["<b>订位时把照片发给我们。</b>我们会在您出发前，先问沙龙做不做得到、要多久。",
+                     "<b>时间比想象中长。</b>光疗、接发、染发矫色可能要三小时。我们先确认，免得您损失一个下午。",
+                     "<b>发质也会先问。</b>不是每家沙龙都处理得了所有发质。坐下前知道比较好。",
+                     "<b>价格多半是分项计算。</b>剪、洗、染、护常常分开算。我们会先问总价。"],
+          "th":["<b>ส่งรูปมาตอนจอง</b> เราจะถามร้านให้ก่อนคุณไป ว่าทำได้ไหมและใช้เวลานานแค่ไหน",
+                "<b>เวลานานกว่าที่คิด</b> เจล ต่อผม และแก้สีอาจใช้เวลาสามชั่วโมง เรายืนยันเวลาให้ก่อน คุณจะได้ไม่เสียทั้งบ่าย",
+                "<b>เราถามเรื่องสภาพเส้นผมด้วย</b> ไม่ใช่ทุกร้านจะทำได้ทุกสภาพผม รู้ก่อนนั่งดีกว่ารู้ตอนนั่งแล้ว",
+                "<b>ราคามักคิดแยกรายการ</b> ตัด สระ ทำสี ทรีตเมนต์ มักแยกกัน เราถามยอดรวมให้ล่วงหน้า"]})),
+]
+
+def listpage(lang, item, kind):
+    v=LANGS[lang]
+    body_items = item.get("b", {}).get(lang)
+    inner = ""
+    if body_items:
+        inner = '<h2 class="sec">%s</h2><ul class="why">%s</ul>' % (
+            html.escape(v["why_h"]), "".join("<li>%s</li>"%x for x in body_items))
+    else:
+        inner = '<h2 class="sec">%s</h2><ul class="why">%s</ul>' % (
+            html.escape(v["why_h"]), "".join("<li>%s</li>"%w for w in v["why"]))
+    body=f"""<h1>{html.escape(item['t'][lang])}</h1>
+<p class="sub">{html.escape(item['d'][lang])}</p>
+<ul class="chips">{"".join("<li>%s</li>"%html.escape(p) for p in v['promise'])}</ul>
+{formbox(v)}
+{inner}
+<a class="back" href="{SITE}/{v['dir']}/">← Douzo</a>"""
+    sub = "%s/%s/" % (kind, item["slug"])
+    return shell(lang, "%s | Douzo"%item["t"][lang], item["d"][lang], v["kw"],
+                 "%s/%s/%s"%(SITE,v["dir"],sub), body, sub)
+
 if os.path.isdir(OUT): shutil.rmtree(OUT)
 os.makedirs(OUT)
 urls=[]
@@ -419,6 +622,14 @@ for lang,v in LANGS.items():
         dd=os.path.join(d,c["slug"]); os.makedirs(dd,exist_ok=True)
         open(os.path.join(dd,"index.html"),"w",encoding="utf-8").write(catpage(lang,c))
         urls.append("%s/%s/%s/"%(SITE,v["dir"],c["slug"]))
+    for a in AREAS:
+        ad=os.path.join(d,"area",a["slug"]); os.makedirs(ad,exist_ok=True)
+        open(os.path.join(ad,"index.html"),"w",encoding="utf-8").write(listpage(lang,a,"area"))
+        urls.append("%s/%s/area/%s/"%(SITE,v["dir"],a["slug"]))
+    for g in GUIDES:
+        gd=os.path.join(d,"guide",g["slug"]); os.makedirs(gd,exist_ok=True)
+        open(os.path.join(gd,"index.html"),"w",encoding="utf-8").write(listpage(lang,g,"guide"))
+        urls.append("%s/%s/guide/%s/"%(SITE,v["dir"],g["slug"]))
     if lang in SHOP:
         sd=os.path.join(d,"shops"); os.makedirs(sd,exist_ok=True)
         open(os.path.join(sd,"index.html"),"w",encoding="utf-8").write(shoppage(lang))
