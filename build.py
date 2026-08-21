@@ -6,7 +6,7 @@
 import os, json, shutil, html
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs")
-SITE = "https://hray7538-web.github.io/douzo"
+SITE = "https://yoyoi.jp"
 CONTACT = "hray7538@gmail.com"   # ← 접수받을 주소. 이 한 줄만 바꾸면 됩니다.
 
 LANGS = {
@@ -669,6 +669,5 @@ open(os.path.join(OUT,"sitemap.xml"),"w",encoding="utf-8").write(
  + "".join("<url><loc>%s</loc></url>\n"%u for u in urls) + "</urlset>\n")
 open(os.path.join(OUT,"robots.txt"),"w",encoding="utf-8").write("User-agent: *\nAllow: /\nSitemap: %s/sitemap.xml\n"%SITE)
 open(os.path.join(OUT,".nojekyll"),"w").write("")
-# CNAME은 DNS 붙은 뒤 다시 켠다
-#open(os.path.join(OUT,"CNAME"),"w").write("yoyoi.jp\n")
+open(os.path.join(OUT,"CNAME"),"w").write("yoyoi.jp\n")
 print("생성 완료: %d 페이지 (언어 %d × 업종 %d + 홈)" % (len(urls)+1, len(LANGS), len(CATS)))
