@@ -312,7 +312,7 @@ def shell(lang, title, desc, kw, canon, body, sub="", only=None):
 <main class="wrap">
 {body}
 </main>
-<footer><div class="wrap">{html.escape(v['foot'])} · <a href="{SITE}/{v['dir']}/about/">{"会社について" if lang=="ja" else ("회사 소개" if lang=="ko" else "About")}</a> · <a href="{SITE}/ja/recruit/">採用</a> · <a href="{SITE}/en/">English</a></div></footer>
+<footer><div class="wrap">{html.escape(v['foot'])} · <a href="{SITE}/{v['dir']}/about/">{"会社について" if lang=="ja" else ("회사 소개" if lang=="ko" else "About")}</a> · <a href="{SITE}/{v['dir']}/recruit/">{"採用" if lang=="ja" else ("채용" if lang=="ko" else ("徵才" if lang=="zh-hant" else ("招聘" if lang=="zh-hans" else ("ร่วมงาน" if lang=="th" else "Careers"))))}</a> · <a href="{SITE}/en/">English</a></div></footer>
 <script>{JS}</script>
 </body>
 </html>
@@ -440,38 +440,104 @@ ABOUT = {
 }
 
 
-RECRUIT = dict(
- title="採用情報 — AIと一緒に働く人を探しています｜ヨヨイ",
- desc="名古屋。AIが両方と話します。人にしかできないところに、人が行きます。AIに人のにおいを吹き込んでくれる人を探しています。正社員1名。",
- lead="AIと一緒に働く人を探しています。",
- sub="AIが両方と話します。お客様がしたいことを聞き、お店が売っているものを聞き、あいだをつなぎます。<br>人にしかできないところに、人が行きます。",
- wanted_h="探しているのは、こういう人です",
- wanted="AIに、人のにおいを吹き込んでくれる人",
- wanted_body=[
-  "AIは正確です。でも、あたたかくない。",
-  "お客様が何を不安に思っているのか。お店が何に困っているのか。——それは、人が教えてあげないと分かりません。",
-  "<b>技術は分からなくて大丈夫です。人が分かることが、技術です。</b>",
- ],
- secs=[
-  ("仕事の内容", ["AIがやりとりした内容を見て、ずれているところを直す",
-                 "人が必要な場面で、人として応対する",
-                 "お店との関係をつくる"]),
-  ("応募資格", ["在留資格に就労制限のない方",
-               "日本語で業務のやりとりができる方"]),
-  ("条件", ["正社員／常勤　1名",
-           "勤務地：名古屋市中区（栄）予定",
-           "給与・社会保険・休日：決まり次第、このページに掲載します"]),
- ],
- apply_h="応募・お問い合わせ",
- apply="下のボタンからメールが開きます。履歴書は不要です。<br>「なぜ興味を持ったか」を、ひとことだけ書いてください。",
- btn="メールで応募する",
-)
+RECRUIT = {
+ "ja": dict(title="採用情報 — AIと一緒に働く人を探しています｜ヨヨイ",
+  desc="名古屋。AIが両方と話します。人にしかできないところに、人が行きます。AIに人のにおいを吹き込んでくれる人を探しています。正社員1名。",
+  lead="AIと一緒に働く人を探しています。",
+  sub="AIが両方と話します。お客様がしたいことを聞き、お店が売っているものを聞き、あいだをつなぎます。<br>人にしかできないところに、人が行きます。",
+  wanted_h="探しているのは、こういう人です", wanted="AIに、人のにおいを吹き込んでくれる人",
+  wanted_body=["AIは正確です。でも、あたたかくない。",
+   "お客様が何を不安に思っているのか。お店が何に困っているのか。——それは、人が教えてあげないと分かりません。",
+   "<b>技術は分からなくて大丈夫です。人が分かることが、技術です。</b>"],
+  secs=[("仕事の内容",["AIがやりとりした内容を見て、ずれているところを直す","人が必要な場面で、人として応対する","お店との関係をつくる"]),
+        ("応募資格",["在留資格に就労制限のない方","日本語で業務のやりとりができる方"]),
+        ("条件",["正社員／常勤　1名","勤務地：名古屋市中区（栄）予定","給与・社会保険・休日：決まり次第、このページに掲載します"])],
+  apply_h="応募・お問い合わせ",
+  apply="下のボタンからメールが開きます。履歴書は不要です。<br>「なぜ興味を持ったか」を、ひとことだけ書いてください。",
+  btn="メールで応募する", mail="ヨヨイ 採用応募"),
+
+ "ko": dict(title="채용 — AI와 함께 일할 사람을 찾습니다｜요요이",
+  desc="나고야. AI가 양쪽과 이야기합니다. 사람에게만 되는 곳에 사람이 갑니다. AI에게 인간의 향기를 불러줄 사람을 찾습니다. 정사원 1명.",
+  lead="AI와 함께 일할 사람을 찾습니다.",
+  sub="AI가 양쪽과 이야기합니다. 손님이 하고 싶은 것을 듣고, 가게가 파는 것을 듣고, 사이를 잇습니다.<br>사람에게만 되는 곳에, 사람이 갑니다.",
+  wanted_h="우리가 찾는 사람은 이렇습니다", wanted="AI에게 인간의 향기를 불러줄 사람",
+  wanted_body=["AI는 정확합니다. 그런데 따뜻하지 않습니다.",
+   "손님이 무엇을 불안해하는지. 가게가 무엇을 곤란해하는지. — 그건 사람이 알려줘야 합니다.",
+   "<b>기술은 몰라도 됩니다. 사람을 아는 것이 기술입니다.</b>"],
+  secs=[("하는 일",["AI가 주고받은 내용을 보고, 어긋난 곳을 고칩니다","사람이 필요한 순간에 사람으로 응대합니다","가게와 관계를 만듭니다"]),
+        ("응모 자격",["재류자격에 취로 제한이 없는 분","일본어로 업무 소통이 가능한 분"]),
+        ("조건",["정사원／상근　1명","근무지: 나고야시 나카구(사카에) 예정","급여·사회보험·휴일: 정해지는 대로 이 페이지에 게재합니다"])],
+  apply_h="응모·문의",
+  apply="아래 버튼을 누르면 메일이 열립니다. 이력서는 필요 없습니다.<br>「왜 관심을 가졌는지」만 한 줄 써주세요.",
+  btn="메일로 응모하기", mail="요요이 채용 응모"),
+
+ "en": dict(title="Careers — someone to work alongside the AI｜Yoyoi",
+  desc="Nagoya. The AI talks to both sides. Where only a person will do, a person goes. Looking for someone who can give the AI a human scent. One full-time position.",
+  lead="We are looking for someone to work alongside the AI.",
+  sub="The AI talks to both sides. It hears what the guest wants, hears what the shop sells, and connects them.<br>Where only a person will do, a person goes.",
+  wanted_h="This is who we are looking for", wanted="Someone who can give the AI a human scent",
+  wanted_body=["The AI is accurate. But it is not warm.",
+   "What the guest is anxious about. What the shop is struggling with. — A person has to tell it.",
+   "<b>You do not need to understand the technology. Understanding people is the technology.</b>"],
+  secs=[("The work",["Read what the AI exchanged, and fix what is off","Step in as a person when a person is needed","Build relationships with the shops"]),
+        ("Eligibility",["A status of residence with no work restrictions","Able to handle work communication in Japanese"]),
+        ("Terms",["Full-time, permanent — one position","Location: Naka-ku, Nagoya (Sakae), planned","Salary, social insurance, holidays: posted here once decided"])],
+  apply_h="Apply",
+  apply="The button below opens an email. No resume needed.<br>Just write one line: why this caught your interest.",
+  btn="Apply by email", mail="Yoyoi - application"),
+
+ "zh-hant": dict(title="徵才 — 尋找與AI一起工作的人｜ヨヨイ",
+  desc="名古屋。AI會和雙方對話。只有人才能做到的地方，由人去。尋找能為AI吹進人的氣味的人。正職1名。",
+  lead="我們在尋找與AI一起工作的人。",
+  sub="AI會和雙方對話。聽客人想做什麼，聽店家賣什麼，把兩邊連起來。<br>只有人才能做到的地方，由人去。",
+  wanted_h="我們要找的是這樣的人", wanted="能為AI吹進人的氣味的人",
+  wanted_body=["AI很準確。但不溫暖。",
+   "客人在不安什麼。店家在困擾什麼。——這些要由人來告訴它。",
+   "<b>不懂技術也沒關係。懂人，就是技術。</b>"],
+  secs=[("工作內容",["看AI往來的內容，修正偏掉的地方","需要人的時候，以人的身分應對","與店家建立關係"]),
+        ("應徵資格",["在留資格沒有就勞限制者","能以日語進行業務溝通者"]),
+        ("條件",["正職／常勤　1名","工作地點：名古屋市中區（榮）預定","薪資・社會保險・休假：確定後刊登於本頁"])],
+  apply_h="應徵・洽詢",
+  apply="按下方按鈕會開啟郵件。不需要履歷。<br>只要寫一句「為什麼感興趣」。",
+  btn="以郵件應徵", mail="ヨヨイ 應徵"),
+
+ "zh-hans": dict(title="招聘 — 寻找与AI一起工作的人｜ヨヨイ",
+  desc="名古屋。AI会和双方对话。只有人才能做到的地方，由人去。寻找能为AI吹进人的气味的人。正职1名。",
+  lead="我们在寻找与AI一起工作的人。",
+  sub="AI会和双方对话。听客人想做什么，听店家卖什么，把两边连起来。<br>只有人才能做到的地方，由人去。",
+  wanted_h="我们要找的是这样的人", wanted="能为AI吹进人的气味的人",
+  wanted_body=["AI很准确。但不温暖。",
+   "客人在不安什么。店家在困扰什么。——这些要由人来告诉它。",
+   "<b>不懂技术也没关系。懂人，就是技术。</b>"],
+  secs=[("工作内容",["看AI往来的内容，修正偏掉的地方","需要人的时候，以人的身份应对","与店家建立关系"]),
+        ("应聘资格",["在留资格没有就劳限制者","能以日语进行业务沟通者"]),
+        ("条件",["正职／常勤　1名","工作地点：名古屋市中区（荣）预定","薪资・社会保险・休假：确定后刊登于本页"])],
+  apply_h="应聘・咨询",
+  apply="按下方按钮会打开邮件。不需要简历。<br>只要写一句「为什么感兴趣」。",
+  btn="以邮件应聘", mail="ヨヨイ 应聘"),
+
+ "th": dict(title="ร่วมงาน — ตามหาคนที่จะทำงานร่วมกับ AI｜Yoyoi",
+  desc="นาโกย่า AI คุยกับทั้งสองฝ่าย ตรงไหนที่ต้องใช้คนเท่านั้น คนจะไป ตามหาคนที่จะเติมกลิ่นอายของมนุษย์ให้ AI พนักงานประจำ 1 อัตรา",
+  lead="เรากำลังตามหาคนที่จะทำงานร่วมกับ AI",
+  sub="AI คุยกับทั้งสองฝ่าย ฟังว่าลูกค้าอยากทำอะไร ฟังว่าร้านขายอะไร แล้วเชื่อมสองฝั่งเข้าด้วยกัน<br>ตรงไหนที่ต้องใช้คนเท่านั้น คนจะไป",
+  wanted_h="เรากำลังตามหาคนแบบนี้", wanted="คนที่จะเติมกลิ่นอายของมนุษย์ให้ AI",
+  wanted_body=["AI แม่นยำ แต่ไม่อบอุ่น",
+   "ลูกค้ากังวลเรื่องอะไร ร้านลำบากใจเรื่องอะไร — สิ่งเหล่านี้ต้องมีคนบอกมัน",
+   "<b>ไม่เข้าใจเทคโนโลยีก็ไม่เป็นไร การเข้าใจคน คือเทคโนโลยี</b>"],
+  secs=[("เนื้องาน",["อ่านสิ่งที่ AI สนทนาไป แล้วแก้ตรงที่คลาดเคลื่อน","เข้ามาดูแลด้วยตัวเองเมื่อจำเป็นต้องใช้คน","สร้างความสัมพันธ์กับร้านค้า"]),
+        ("คุณสมบัติ",["ผู้ที่มีสถานะพำนักซึ่งไม่มีข้อจำกัดในการทำงาน","ผู้ที่สื่อสารการทำงานเป็นภาษาญี่ปุ่นได้"]),
+        ("เงื่อนไข",["พนักงานประจำ／เต็มเวลา　1 อัตรา","สถานที่ทำงาน: เขตนากะ เมืองนาโกย่า (ซาคาเอะ) ตามแผน","เงินเดือน ประกันสังคม วันหยุด: จะประกาศในหน้านี้เมื่อกำหนดแล้ว"])],
+  apply_h="สมัคร・สอบถาม",
+  apply="กดปุ่มด้านล่างเพื่อเปิดอีเมล ไม่ต้องใช้เรซูเม่<br>เขียนแค่บรรทัดเดียวว่า “ทำไมถึงสนใจ”",
+  btn="สมัครทางอีเมล", mail="Yoyoi - สมัครงาน"),
+}
 
 def aboutpage(lang):
     v=LANGS[lang]; a=ABOUT[lang]
     paras="".join("<p>%s</p>"%x for x in a["body"])
     bio="".join("<p>%s</p>"%x for x in a["bio"])
-    rec=('<p style="margin-top:2rem"><a class="cta" href="%s/ja/recruit/">採用情報を見る →</a></p>'%SITE) if lang=="ja" else ""
+    _rl={"ja":"採用情報を見る →","ko":"채용 안내 보기 →","en":"See careers →","zh-hant":"查看徵才資訊 →","zh-hans":"查看招聘信息 →","th":"ดูข้อมูลร่วมงาน →"}
+    rec='<p style="margin-top:2rem"><a class="cta" href="%s/%s/recruit/">%s</a></p>'%(SITE,v["dir"],html.escape(_rl[lang])) if lang in RECRUIT else ""
     body=f"""<h1>{html.escape(a['h'])}</h1>
 <div class="prose">{paras}</div>
 <div class="why-big"><b>{html.escape(a['ph'])}</b><span>{html.escape(a['ps'])}</span></div>
@@ -480,20 +546,20 @@ def aboutpage(lang):
 {rec}"""
     return shell(lang, a["title"], a["desc"], "ヨヨイ,Yoyoi,名古屋,about", "%s/%s/about/"%(SITE,v["dir"]), body, "about/", only=list(ABOUT.keys()))
 
-def recruitpage():
-    v=LANGS["ja"]; r=RECRUIT
+def recruitpage(lang):
+    v=LANGS[lang]; r=RECRUIT[lang]
     wb="".join("<p>%s</p>"%x for x in r["wanted_body"])
     secs="".join('<h2>%s</h2><ul class="dl">%s</ul>'%(html.escape(t),
         "".join("<li>%s</li>"%html.escape(x) for x in items)) for t,items in r["secs"])
-    jd = " ".join(x.replace("<b>","").replace("</b>","") for x in r["wanted_body"])
-    ld = ('{"@context":"https://schema.org/","@type":"JobPosting",'
-          '"title":"AIと一緒に働くスタッフ（正社員）",'
-          '"description":"<p>' + html.escape(jd) + '</p>",'
-          '"datePosted":"' + TODAY + '",'
-          '"employmentType":"FULL_TIME",'
-          '"hiringOrganization":{"@type":"Organization","name":"ヨヨイ（Yoyoi）","sameAs":"' + SITE + '"},'
-          '"jobLocation":{"@type":"Place","address":{"@type":"PostalAddress",'
-          '"addressLocality":"名古屋市中区","addressRegion":"愛知県","addressCountry":"JP"}}}')
+    jd=" ".join(x.replace("<b>","").replace("</b>","") for x in r["wanted_body"])
+    ld=('{"@context":"https://schema.org/","@type":"JobPosting",'
+        '"title":' + json.dumps(r["lead"], ensure_ascii=False) + ','
+        '"description":' + json.dumps("<p>"+jd+"</p>", ensure_ascii=False) + ','
+        '"datePosted":"' + TODAY + '","employmentType":"FULL_TIME",'
+        '"hiringOrganization":{"@type":"Organization","name":"ヨヨイ（Yoyoi）","sameAs":"' + SITE + '"},'
+        '"jobLocation":{"@type":"Place","address":{"@type":"PostalAddress",'
+        '"addressLocality":"名古屋市中区","addressRegion":"愛知県","addressCountry":"JP"}}}') if lang=="ja" else ""
+    ldtag = '<script type="application/ld+json">%s</script>'%ld if ld else ""
     body=f"""<h1 class="lead">{html.escape(r['lead'])}</h1>
 <p class="sub">{r['sub']}</p>
 <div class="why-big"><b>{html.escape(r['wanted'])}</b><span>{html.escape(r['wanted_h'])}</span></div>
@@ -502,10 +568,11 @@ def recruitpage():
 <div class="box">
 <h2>{html.escape(r['apply_h'])}</h2>
 <p class="note">{r['apply']}</p>
-<div class="btns"><a class="p" href="mailto:{CONTACT}?subject={urllib.parse.quote('ヨヨイ 採用応募')}">{html.escape(r['btn'])}</a></div>
+<div class="btns"><a class="p" href="mailto:{CONTACT}?subject={urllib.parse.quote(r['mail'])}">{html.escape(r['btn'])}</a></div>
 </div>
-<script type="application/ld+json">{ld}</script>"""
-    return shell("ja", r["title"], r["desc"], "名古屋,求人,正社員,採用,ヨヨイ", "%s/ja/recruit/"%SITE, body, "recruit/", only=["ja"])
+{ldtag}"""
+    return shell(lang, r["title"], r["desc"], "名古屋,求人,正社員,採用,ヨヨイ,Yoyoi,recruit",
+                 "%s/%s/recruit/"%(SITE,v["dir"]), body, "recruit/", only=list(RECRUIT.keys()))
 
 def formbox(v):
     return f"""<div class="box">
@@ -605,6 +672,86 @@ SHOP = dict(
          "We never hand a guest's personal information to a shop."],
    cta="Questions? Send them here.",
    ph="e.g. how you prefer to take reservations, which hours work, anything you would rather decline."),
+ ko=dict(title="나고야 가게 여러분께 | 요요이",
+   h1="외국인 예약을,<br>안심하고 받으실 수 있도록.",
+   sub="요요이(Yoyoi)는 방일 손님을 대신해 일본어로 예약을 잡아드리는 서비스입니다. 가게 쪽의 등록·게재료·시스템 도입은 일절 필요 없습니다.",
+   lead_h="가게에 무엇이 달라지는가",
+   lead=["<b>조건은 사전에 전부 합의돼 있습니다.</b> 인원·시간·예산·알레르기·종교상 제한까지 확인한 뒤에 전화드립니다. 자리에 앉고 나서 말이 바뀌는 일이 없습니다.",
+         "<b>무연락 취소를 줄입니다.</b> 손님과는 예약 전에 대화를 나눕니다. 연락이 닿는 상태입니다.",
+         "<b>문제가 있었던 손님은 두 번 연결하지 않습니다.</b> 가게에서는 「한 번뿐인 외국인 손님」이어도, 우리에게는 기록이 남습니다. 가게가 기억할 수 없는 것을 우리가 기억합니다.",
+         "<b>언어 부담이 없습니다.</b> 주고받는 것은 전부 우리가 일본어로 합니다."],
+   ask_h="부탁드리고 싶은 것",
+   ask=["전화로 예약을 받아주시는 것. 그것뿐입니다.",
+        "등록·계약·게재료는 없습니다. 거절하셔도 괜찮습니다."],
+   pay_h="요금에 대하여",
+   pay=["<b>가치가 있었다고 생각되는 금액을, 가게 쪽에서 지불해주시면 됩니다.</b> 지불이 없어도 연결은 달라지지 않습니다.",
+        "<b>많이 지불하셔도 우선적으로 소개하지 않습니다.</b> 돈으로 순서를 팔지 않습니다. 파는 순간 이 서비스를 신뢰하실 이유가 없어집니다."],
+   fair_h="우리가 지키는 것",
+   fair=["가게를 평가하고, 손님도 평가합니다. 한쪽만 지키지 않습니다.",
+         "국적·인종·신조로 손님을 선별하지 않습니다. 판단하는 것은 행동뿐입니다.",
+         "손님의 개인정보를 가게에 넘기지 않습니다."],
+   cta="질문이나 상담은 여기서 보내주세요.",
+   ph="예: 예약 받는 방식, 가능한 시간대, 거절하고 싶은 조건 등이 있으면 적어주세요."),
+ **{"zh-hant": dict(title="給名古屋店家 | ヨヨイ",
+   h1="外國人的預約，<br>安心地接下來。",
+   sub="ヨヨイ（Yoyoi）代替訪日客人以日語進行預約。店家不需登記、不收刊登費、不必導入任何系統。",
+   lead_h="對店家而言，會有什麼改變",
+   lead=["<b>條件在事前已全部談妥。</b>人數、時間、預算、過敏、宗教上的限制，都確認過才打電話。不會坐下之後話又變了。",
+         "<b>減少不告而別的取消。</b>我們在預約前已與客人往來過，聯絡得上。",
+         "<b>出過問題的客人，不會再介紹第二次。</b>對店家來說是「只來一次的外國客人」，對我們來說有紀錄。店家記不住的，我們替您記住。",
+         "<b>沒有語言負擔。</b>所有往來都由我們以日語進行。"],
+   ask_h="想拜託您的事",
+   ask=["以電話接受預約。就只有這樣。",
+        "沒有登記、沒有合約、沒有刊登費。您也可以拒絕。"],
+   pay_h="關於費用",
+   pay=["<b>覺得值多少，由店家您來支付。</b>不付款，我們的介紹也不會改變。",
+        "<b>付得多也不會優先介紹。</b>我們不賣順序。一旦賣了，就沒有理由再信任這項服務。"],
+   fair_h="我們會守住的事",
+   fair=["我們評估店家，也評估客人。不會只保護單邊。",
+         "不以國籍、種族、信仰篩選客人。我們只看行為。",
+         "絕不把客人的個人資料交給店家。"],
+   cta="有任何問題或想商量的，請從這裡寄給我們。",
+   ph="例如：您偏好的預約方式、可以配合的時段、希望婉拒的條件等。"),
+ "zh-hans": dict(title="给名古屋店家 | ヨヨイ",
+   h1="外国人的预约，<br>安心地接下来。",
+   sub="ヨヨイ（Yoyoi）代替访日客人以日语进行预约。店家不需登记、不收刊登费、不必导入任何系统。",
+   lead_h="对店家而言，会有什么改变",
+   lead=["<b>条件在事前已全部谈妥。</b>人数、时间、预算、过敏、宗教上的限制，都确认过才打电话。不会坐下之后话又变了。",
+         "<b>减少不告而别的取消。</b>我们在预约前已与客人往来过，联络得上。",
+         "<b>出过问题的客人，不会再介绍第二次。</b>对店家来说是「只来一次的外国客人」，对我们来说有记录。店家记不住的，我们替您记住。",
+         "<b>没有语言负担。</b>所有往来都由我们以日语进行。"],
+   ask_h="想拜托您的事",
+   ask=["以电话接受预约。就只有这样。",
+        "没有登记、没有合约、没有刊登费。您也可以拒绝。"],
+   pay_h="关于费用",
+   pay=["<b>觉得值多少，由店家您来支付。</b>不付款，我们的介绍也不会改变。",
+        "<b>付得多也不会优先介绍。</b>我们不卖顺序。一旦卖了，就没有理由再信任这项服务。"],
+   fair_h="我们会守住的事",
+   fair=["我们评估店家，也评估客人。不会只保护单边。",
+         "不以国籍、种族、信仰筛选客人。我们只看行为。",
+         "绝不把客人的个人资料交给店家。"],
+   cta="有任何问题或想商量的，请从这里寄给我们。",
+   ph="例如：您偏好的预约方式、可以配合的时段、希望婉拒的条件等。"),
+ "th": dict(title="ถึงร้านค้าในนาโกย่า | Yoyoi",
+   h1="รับการจองจากชาวต่างชาติ<br>ได้อย่างสบายใจ",
+   sub="Yoyoi จองแทนนักท่องเที่ยวเป็นภาษาญี่ปุ่น ร้านไม่ต้องลงทะเบียน ไม่มีค่าลงประกาศ ไม่ต้องติดตั้งระบบใดๆ",
+   lead_h="อะไรจะเปลี่ยนไปสำหรับร้าน",
+   lead=["<b>ตกลงเงื่อนไขครบก่อนโทร</b> จำนวนคน เวลา งบประมาณ ภูมิแพ้ ข้อจำกัดทางศาสนา ยืนยันหมดแล้วจึงโทรหาร้าน จะไม่มีการเปลี่ยนเรื่องหลังนั่งโต๊ะแล้ว",
+         "<b>ลดการยกเลิกแบบไม่แจ้ง</b> เราคุยกับลูกค้าก่อนจอง และติดต่อกลับได้",
+         "<b>ลูกค้าที่เคยมีปัญหา จะไม่ถูกส่งไปอีกเป็นครั้งที่สอง</b> สำหรับร้านคือ “ลูกค้าต่างชาติที่มาครั้งเดียว” แต่สำหรับเรามีบันทึกไว้ สิ่งที่ร้านจำไม่ได้ เราจำแทน",
+         "<b>ไม่มีภาระเรื่องภาษา</b> การติดต่อทั้งหมด เราทำเป็นภาษาญี่ปุ่น"],
+   ask_h="สิ่งที่อยากขอ",
+   ask=["รับการจองทางโทรศัพท์ เท่านั้นเอง",
+        "ไม่มีการลงทะเบียน ไม่มีสัญญา ไม่มีค่าลงประกาศ จะปฏิเสธก็ได้"],
+   pay_h="เรื่องค่าบริการ",
+   pay=["<b>คิดว่ามีค่าเท่าไร ทางร้านจ่ายเท่านั้น</b> ถ้าไม่จ่าย การส่งลูกค้าก็ไม่เปลี่ยนไป",
+        "<b>จ่ายมากก็ไม่ได้ถูกแนะนำก่อน</b> เราไม่ขายลำดับ ถ้าขายเมื่อไร ก็ไม่เหลือเหตุผลให้เชื่อใจบริการนี้"],
+   fair_h="สิ่งที่เรายึดถือ",
+   fair=["เราประเมินร้าน และประเมินลูกค้าด้วย จะไม่ปกป้องเพียงฝ่ายเดียว",
+         "เราไม่คัดกรองลูกค้าด้วยสัญชาติ เชื้อชาติ หรือความเชื่อ เราดูที่การกระทำเท่านั้น",
+         "เราจะไม่ส่งข้อมูลส่วนบุคคลของลูกค้าให้ร้านเด็ดขาด"],
+   cta="มีคำถามหรืออยากปรึกษา ส่งมาทางนี้ได้เลย",
+   ph="เช่น วิธีรับจองที่สะดวก ช่วงเวลาที่รับได้ เงื่อนไขที่อยากปฏิเสธ")},
 )
 
 def shoppage(lang):
@@ -851,10 +998,10 @@ for lang,v in LANGS.items():
         bd=os.path.join(d,"about"); os.makedirs(bd,exist_ok=True)
         open(os.path.join(bd,"index.html"),"w",encoding="utf-8").write(aboutpage(lang))
         urls.append("%s/%s/about/"%(SITE,v["dir"]))
-    if lang=="ja":
+    if lang in RECRUIT:
         rd=os.path.join(d,"recruit"); os.makedirs(rd,exist_ok=True)
-        open(os.path.join(rd,"index.html"),"w",encoding="utf-8").write(recruitpage())
-        urls.append("%s/ja/recruit/"%SITE)
+        open(os.path.join(rd,"index.html"),"w",encoding="utf-8").write(recruitpage(lang))
+        urls.append("%s/%s/recruit/"%(SITE,v["dir"]))
     if lang in SHOP:
         sd=os.path.join(d,"shops"); os.makedirs(sd,exist_ok=True)
         open(os.path.join(sd,"index.html"),"w",encoding="utf-8").write(shoppage(lang))

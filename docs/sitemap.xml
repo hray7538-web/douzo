@@ -17,6 +17,7 @@
 <url><loc>https://yoyoi.jp/en/guide/counter-seats/</loc></url>
 <url><loc>https://yoyoi.jp/en/guide/salon-photos/</loc></url>
 <url><loc>https://yoyoi.jp/en/about/</loc></url>
+<url><loc>https://yoyoi.jp/en/recruit/</loc></url>
 <url><loc>https://yoyoi.jp/en/shops/</loc></url>
 <url><loc>https://yoyoi.jp/ja/</loc></url>
 <url><loc>https://yoyoi.jp/ja/restaurant/</loc></url>
@@ -54,6 +55,8 @@
 <url><loc>https://yoyoi.jp/ko/guide/counter-seats/</loc></url>
 <url><loc>https://yoyoi.jp/ko/guide/salon-photos/</loc></url>
 <url><loc>https://yoyoi.jp/ko/about/</loc></url>
+<url><loc>https://yoyoi.jp/ko/recruit/</loc></url>
+<url><loc>https://yoyoi.jp/ko/shops/</loc></url>
 <url><loc>https://yoyoi.jp/zh-hant/</loc></url>
 <url><loc>https://yoyoi.jp/zh-hant/restaurant/</loc></url>
 <url><loc>https://yoyoi.jp/zh-hant/sushi/</loc></url>
@@ -71,6 +74,8 @@
 <url><loc>https://yoyoi.jp/zh-hant/guide/counter-seats/</loc></url>
 <url><loc>https://yoyoi.jp/zh-hant/guide/salon-photos/</loc></url>
 <url><loc>https://yoyoi.jp/zh-hant/about/</loc></url>
+<url><loc>https://yoyoi.jp/zh-hant/recruit/</loc></url>
+<url><loc>https://yoyoi.jp/zh-hant/shops/</loc></url>
 <url><loc>https://yoyoi.jp/zh-hans/</loc></url>
 <url><loc>https://yoyoi.jp/zh-hans/restaurant/</loc></url>
 <url><loc>https://yoyoi.jp/zh-hans/sushi/</loc></url>
@@ -88,6 +93,8 @@
 <url><loc>https://yoyoi.jp/zh-hans/guide/counter-seats/</loc></url>
 <url><loc>https://yoyoi.jp/zh-hans/guide/salon-photos/</loc></url>
 <url><loc>https://yoyoi.jp/zh-hans/about/</loc></url>
+<url><loc>https://yoyoi.jp/zh-hans/recruit/</loc></url>
+<url><loc>https://yoyoi.jp/zh-hans/shops/</loc></url>
 <url><loc>https://yoyoi.jp/th/</loc></url>
 <url><loc>https://yoyoi.jp/th/restaurant/</loc></url>
 <url><loc>https://yoyoi.jp/th/sushi/</loc></url>
@@ -105,4 +112,6 @@
 <url><loc>https://yoyoi.jp/th/guide/counter-seats/</loc></url>
 <url><loc>https://yoyoi.jp/th/guide/salon-photos/</loc></url>
 <url><loc>https://yoyoi.jp/th/about/</loc></url>
+<url><loc>https://yoyoi.jp/th/recruit/</loc></url>
+<url><loc>https://yoyoi.jp/th/shops/</loc></url>
 </urlset>
