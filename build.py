@@ -3,10 +3,11 @@
 언어 × 업종 조합으로 SEO 페이지를 찍어낸다. 의존성 없음.
   python3 build.py
 """
-import os, json, shutil, html
+import os, json, shutil, html, datetime, urllib.parse
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs")
 SITE = "https://yoyoi.jp"
+TODAY = datetime.date.today().isoformat()
 CONTACT = "hray7538@gmail.com"   # ← 접수받을 주소. 이 한 줄만 바꾸면 됩니다.
 
 LANGS = {
@@ -253,6 +254,20 @@ if(c)c.addEventListener('click',function(){
   navigator.clipboard.writeText(t.value||'').then(function(){var o=c.textContent;c.textContent=d;setTimeout(function(){c.textContent=o},1600)});});
 })();""" % CONTACT
 
+CSS += """
+.prose p{margin:0 0 1rem;line-height:1.85}
+.why-big{margin:2.4rem 0;padding:1.6rem 0;border-top:3px solid var(--acc);border-bottom:1px solid #e5e0da}
+.why-big b{display:block;font-size:1.9rem;line-height:1.3;letter-spacing:-.01em}
+.why-big span{display:block;margin-top:.7rem;color:var(--mut);line-height:1.8}
+h1.lead{font-size:2.3rem;line-height:1.25}
+ul.dl{list-style:none;padding:0;margin:0 0 1.6rem}
+ul.dl li{padding:.7rem 0 .7rem 1.1rem;border-bottom:1px solid #eceae6;position:relative}
+ul.dl li:before{content:"";position:absolute;left:0;top:1.25rem;width:5px;height:5px;border-radius:50%;background:var(--acc)}
+a.cta{display:inline-block;padding:.85rem 1.5rem;background:var(--acc);color:#fff;border-radius:999px;text-decoration:none;font-weight:600}
+a.cta:hover{opacity:.88}
+footer a{color:inherit}
+"""
+
 def langbar(cur, sub=""):
     out=[]
     for k,v in LANGS.items():
@@ -292,11 +307,142 @@ def shell(lang, title, desc, kw, canon, body, sub=""):
 <main class="wrap">
 {body}
 </main>
-<footer><div class="wrap">{html.escape(v['foot'])} · <a href="{SITE}/en/">English</a></div></footer>
+<footer><div class="wrap">{html.escape(v['foot'])} · <a href="{SITE}/{v['dir']}/about/">{"会社について" if lang=="ja" else ("회사 소개" if lang=="ko" else "About")}</a> · <a href="{SITE}/ja/recruit/">採用</a> · <a href="{SITE}/en/">English</a></div></footer>
 <script>{JS}</script>
 </body>
 </html>
 """
+
+# ══════════════════════════════════════════════════════════
+#  회사 소개 · 채용
+# ══════════════════════════════════════════════════════════
+
+ABOUT = {
+ "ja": dict(
+  title="ヨヨイについて — つくった人と、つくった理由",
+  desc="ソウル・江南で13年クリニックを運営してきた者が、名古屋で始めたサービスです。人は、話せる。つなぐのは、こちらがやります。",
+  h="私たちが、これをやる理由",
+  body=[
+   "私たちはソウル・江南で、13年、美容クリニックを運営しています。お客様のほとんどは20〜40代の女性です。",
+   "その方々が、日本へ行きます。そして向こうで何が起きるか、私たちは知っています。",
+   "旅先で日本語が出てくる。翻訳をかけるとサイトが崩れる。ホームページから予約しようとしたら、日本の電話番号が要る。",
+   "旅が、こうであってはいけない。旅は旅らしく——空を見て、人に会って、文化に触れる。",
+   "お店も同じです。料理をつくり、お客様と笑っている時間に、ホームページを見つめていてはいけない。",
+  ],
+  ph="人は、話せる。",
+  ps="したいことを言えばいい。売っているものを言えばいい。つなぐのは、こちらがやります。",
+  who="つくった人",
+  bio=[
+   "<b>河恩煥（ハ・ウンファン）</b>　1982年生まれ。2008年、成均館大学校医科大学卒業。",
+   "2013年からソウル・江南で美容クリニックを開業し、フランチャイズとして展開してきました。13年が経ちましたが、現在も運営を続けています。香港に3院、米国でも開業を準備しています。",
+   "事業の中でAIを使う必要が生じ、そこから人文学と哲学を学ぶようになりました。順序が逆に見えるかもしれませんが——<b>「人間とは何か」を問わなければ、AIはつくれませんでした。</b>",
+  ]),
+ "ko": dict(
+  title="요요이에 대하여 — 만든 사람과, 만든 이유",
+  desc="서울 강남에서 13년 클리닉을 운영해온 사람이 나고야에서 시작한 서비스입니다. 사람은 말은 합니다. 잇는 것은 우리가 합니다.",
+  h="우리가 이걸 하는 이유",
+  body=[
+   "우리는 서울 강남에서 13년째 미용클리닉을 하고 있습니다. 손님은 대부분 20~40대 여성입니다.",
+   "그분들이 일본에 갑니다. 그리고 가서 겪는 일을 우리는 압니다.",
+   "여행하다 일본어가 나옵니다. 번역기를 돌리면 웹이 깨집니다. 홈페이지로 예약했더니 일본 전화번호가 필요하다고 합니다.",
+   "여행이 이러면 안 됩니다. 여행은 여행답게 — 하늘을 보고, 사람을 만나고, 문화를 겪는 것입니다.",
+   "가게도 마찬가지입니다. 음식을 만들고 손님과 웃을 시간에 홈페이지를 쳐다보고 있으면 안 됩니다.",
+  ],
+  ph="사람은 말은 합니다.",
+  ps="하고 싶은 것을 말하면 됩니다. 파는 것을 말하면 됩니다. 잇는 것은 우리가 합니다.",
+  who="만든 사람",
+  bio=[
+   "<b>하은환</b>　1982년생. 2008년 성균관대학교 의과대학 졸업.",
+   "2013년부터 서울 강남에서 미용클리닉을 열어 프랜차이즈로 전개해 왔습니다. 13년이 지났지만 지금도 운영하고 있습니다. 홍콩에 3개 원, 미국에서도 개원을 준비하고 있습니다.",
+   "사업에 AI가 필요해져서, 거기서부터 인문학과 철학을 공부하게 되었습니다. 순서가 거꾸로 보일 수 있지만 — <b>「인간이 무엇인가」를 묻지 않으면 AI를 만들 수 없었습니다.</b>",
+  ]),
+ "en": dict(
+  title="About Yoyoi — who made it, and why",
+  desc="Built by someone who has run an aesthetic clinic in Gangnam, Seoul for 13 years. People can speak. We do the connecting.",
+  h="Why we do this",
+  body=[
+   "We have run an aesthetic clinic in Gangnam, Seoul for thirteen years. Most of our guests are women in their twenties to forties.",
+   "Those guests travel to Japan. And we know what happens to them there.",
+   "Japanese appears. You run it through a translator and the page breaks. You try to book online and it asks for a Japanese phone number.",
+   "Travel should not be like this. Travel should be travel — look at the sky, meet people, touch a culture.",
+   "The same goes for the shops. The hours spent cooking and laughing with guests should not be spent staring at a booking page.",
+  ],
+  ph="People can speak.",
+  ps="Say what you want to do. Say what you sell. We do the connecting.",
+  who="Who made this",
+  bio=[
+   "<b>Ha EunHwan</b>　Born 1982. Graduated from Sungkyunkwan University School of Medicine in 2008.",
+   "Opened an aesthetic clinic in Gangnam, Seoul in 2013 and grew it into a franchise. Thirteen years on, it is still running. Three clinics in Hong Kong; preparing to open in the United States.",
+   "The work required AI, and that is how I came to study the humanities and philosophy. The order may look backwards, but it is what happened — <b>I could not build the AI without first asking what a human being is.</b>",
+  ]),
+}
+
+RECRUIT = dict(
+ title="採用情報 — AIと一緒に働く人を探しています｜ヨヨイ",
+ desc="名古屋。AIが両方と話します。人にしかできないところに、人が行きます。AIに人のにおいを吹き込んでくれる人を探しています。正社員1名。",
+ lead="AIと一緒に働く人を探しています。",
+ sub="AIが両方と話します。お客様がしたいことを聞き、お店が売っているものを聞き、あいだをつなぎます。<br>人にしかできないところに、人が行きます。",
+ wanted_h="探しているのは、こういう人です",
+ wanted="AIに、人のにおいを吹き込んでくれる人",
+ wanted_body=[
+  "AIは正確です。でも、あたたかくない。",
+  "お客様が何を不安に思っているのか。お店が何に困っているのか。——それは、人が教えてあげないと分かりません。",
+  "<b>技術は分からなくて大丈夫です。人が分かることが、技術です。</b>",
+ ],
+ secs=[
+  ("仕事の内容", ["AIがやりとりした内容を見て、ずれているところを直す",
+                 "人が必要な場面で、人として応対する",
+                 "お店との関係をつくる"]),
+  ("応募資格", ["在留資格に就労制限のない方",
+               "日本語で業務のやりとりができる方"]),
+  ("条件", ["正社員／常勤　1名",
+           "勤務地：名古屋市中区（栄）予定",
+           "給与・社会保険・休日：決まり次第、このページに掲載します"]),
+ ],
+ apply_h="応募・お問い合わせ",
+ apply="下のボタンからメールが開きます。履歴書は不要です。<br>「なぜ興味を持ったか」を、ひとことだけ書いてください。",
+ btn="メールで応募する",
+)
+
+def aboutpage(lang):
+    v=LANGS[lang]; a=ABOUT[lang]
+    paras="".join("<p>%s</p>"%x for x in a["body"])
+    bio="".join("<p>%s</p>"%x for x in a["bio"])
+    rec=('<p style="margin-top:2rem"><a class="cta" href="%s/ja/recruit/">採用情報を見る →</a></p>'%SITE) if lang=="ja" else ""
+    body=f"""<h1>{html.escape(a['h'])}</h1>
+<div class="prose">{paras}</div>
+<div class="why-big"><b>{html.escape(a['ph'])}</b><span>{html.escape(a['ps'])}</span></div>
+<h2>{html.escape(a['who'])}</h2>
+<div class="prose">{bio}</div>
+{rec}"""
+    return shell(lang, a["title"], a["desc"], "ヨヨイ,Yoyoi,名古屋,about", "%s/%s/about/"%(SITE,v["dir"]), body, "about/")
+
+def recruitpage():
+    v=LANGS["ja"]; r=RECRUIT
+    wb="".join("<p>%s</p>"%x for x in r["wanted_body"])
+    secs="".join('<h2>%s</h2><ul class="dl">%s</ul>'%(html.escape(t),
+        "".join("<li>%s</li>"%html.escape(x) for x in items)) for t,items in r["secs"])
+    jd = " ".join(x.replace("<b>","").replace("</b>","") for x in r["wanted_body"])
+    ld = ('{"@context":"https://schema.org/","@type":"JobPosting",'
+          '"title":"AIと一緒に働くスタッフ（正社員）",'
+          '"description":"<p>' + html.escape(jd) + '</p>",'
+          '"datePosted":"' + TODAY + '",'
+          '"employmentType":"FULL_TIME",'
+          '"hiringOrganization":{"@type":"Organization","name":"ヨヨイ（Yoyoi）","sameAs":"' + SITE + '"},'
+          '"jobLocation":{"@type":"Place","address":{"@type":"PostalAddress",'
+          '"addressLocality":"名古屋市中区","addressRegion":"愛知県","addressCountry":"JP"}}}')
+    body=f"""<h1 class="lead">{html.escape(r['lead'])}</h1>
+<p class="sub">{r['sub']}</p>
+<div class="why-big"><b>{html.escape(r['wanted'])}</b><span>{html.escape(r['wanted_h'])}</span></div>
+<div class="prose">{wb}</div>
+{secs}
+<div class="box">
+<h2>{html.escape(r['apply_h'])}</h2>
+<p class="note">{r['apply']}</p>
+<div class="btns"><a class="p" href="mailto:{CONTACT}?subject={urllib.parse.quote('ヨヨイ 採用応募')}">{html.escape(r['btn'])}</a></div>
+</div>
+<script type="application/ld+json">{ld}</script>"""
+    return shell("ja", r["title"], r["desc"], "名古屋,求人,正社員,採用,ヨヨイ", "%s/ja/recruit/"%SITE, body, "recruit/")
 
 def formbox(v):
     return f"""<div class="box">
@@ -638,6 +784,14 @@ for lang,v in LANGS.items():
         gd=os.path.join(d,"guide",g["slug"]); os.makedirs(gd,exist_ok=True)
         open(os.path.join(gd,"index.html"),"w",encoding="utf-8").write(listpage(lang,g,"guide"))
         urls.append("%s/%s/guide/%s/"%(SITE,v["dir"],g["slug"]))
+    if lang in ABOUT:
+        bd=os.path.join(d,"about"); os.makedirs(bd,exist_ok=True)
+        open(os.path.join(bd,"index.html"),"w",encoding="utf-8").write(aboutpage(lang))
+        urls.append("%s/%s/about/"%(SITE,v["dir"]))
+    if lang=="ja":
+        rd=os.path.join(d,"recruit"); os.makedirs(rd,exist_ok=True)
+        open(os.path.join(rd,"index.html"),"w",encoding="utf-8").write(recruitpage())
+        urls.append("%s/ja/recruit/"%SITE)
     if lang in SHOP:
         sd=os.path.join(d,"shops"); os.makedirs(sd,exist_ok=True)
         open(os.path.join(sd,"index.html"),"w",encoding="utf-8").write(shoppage(lang))
