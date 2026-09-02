@@ -268,20 +268,25 @@ a.cta:hover{opacity:.88}
 footer a{color:inherit}
 """
 
-def langbar(cur, sub=""):
+def langbar(cur, sub="", only=None):
+    """only: 그 하위페이지가 존재하는 언어. 없는 언어는 그 언어의 홈으로 보낸다(404 방지)."""
     out=[]
     for k,v in LANGS.items():
-        href = "%s/%s/%s" % (SITE, v["dir"], sub)
+        tgt = sub if (only is None or k in only) else ""
+        href = "%s/%s/%s" % (SITE, v["dir"], tgt)
         a = ' aria-current="page"' if k==cur else ''
         out.append('<a href="%s"%s>%s</a>' % (href, a, html.escape(v["name"])))
     return '<nav class="langs">%s</nav>' % "".join(out)
 
-def alts(sub=""):
-    r=['<link rel="alternate" hreflang="%s" href="%s/%s/%s">' % (v["hreflang"],SITE,v["dir"],sub) for v in LANGS.values()]
-    r.append('<link rel="alternate" hreflang="x-default" href="%s/en/%s">' % (SITE,sub))
+def alts(sub="", only=None):
+    """only: 그 페이지가 실제로 존재하는 언어 키 목록. None이면 전 언어."""
+    keys = list(LANGS.keys()) if only is None else [k for k in LANGS if k in only]
+    r=['<link rel="alternate" hreflang="%s" href="%s/%s/%s">' % (LANGS[k]["hreflang"],SITE,LANGS[k]["dir"],sub) for k in keys]
+    if "en" in keys:
+        r.append('<link rel="alternate" hreflang="x-default" href="%s/en/%s">' % (SITE,sub))
     return "\n".join(r)
 
-def shell(lang, title, desc, kw, canon, body, sub=""):
+def shell(lang, title, desc, kw, canon, body, sub="", only=None):
     v=LANGS[lang]
     return f"""<!doctype html>
 <html lang="{v['hreflang']}">
@@ -292,7 +297,7 @@ def shell(lang, title, desc, kw, canon, body, sub=""):
 <meta name="description" content="{html.escape(desc)}">
 <meta name="keywords" content="{html.escape(kw)}">
 <link rel="canonical" href="{canon}">
-{alts(sub)}
+{alts(sub, only)}
 <meta property="og:title" content="{html.escape(title)}">
 <meta property="og:description" content="{html.escape(desc)}">
 <meta property="og:type" content="website">
@@ -302,7 +307,7 @@ def shell(lang, title, desc, kw, canon, body, sub=""):
 <body>
 <header><div class="wrap"><div class="hrow">
 <a class="logo" href="{SITE}/{v['dir']}/">ヨヨイ<span>.</span></a>
-{langbar(lang, sub)}
+{langbar(lang, sub, only)}
 </div></div></header>
 <main class="wrap">
 {body}
@@ -375,7 +380,65 @@ ABOUT = {
    "Opened an aesthetic clinic in Gangnam, Seoul in 2013 and grew it into a franchise. Thirteen years on, it is still running. Three clinics in Hong Kong; preparing to open in the United States.",
    "The work required AI, and that is how I came to study the humanities and philosophy. The order may look backwards, but it is what happened — <b>I could not build the AI without first asking what a human being is.</b>",
   ]),
+ "zh-hant": dict(
+  title="關於ヨヨイ — 是誰做的，為什麼做",
+  desc="由在首爾江南經營美容診所十三年的人，在名古屋開始的服務。人，是會說話的。連起來，由我們來做。",
+  h="我們為什麼做這件事",
+  body=[
+   "我們在首爾江南經營美容診所已經十三年。客人大多是二十到四十多歲的女性。",
+   "那些客人會來日本。而她們在這裡會遇到什麼，我們知道。",
+   "旅途中冒出日文。用翻譯一跑，網頁就壞了。想從官網訂位，卻要日本的電話號碼。",
+   "旅行不該是這樣。旅行就該像旅行——看看天空，遇見人，碰觸文化。",
+   "店家也一樣。做菜、和客人說笑的時間，不該花在盯著訂位頁面上。",
+  ],
+  ph="人，是會說話的。",
+  ps="想做什麼，說出來就好。賣什麼，說出來就好。連起來，由我們來做。",
+  who="做這件事的人",
+  bio=[
+   "<b>河恩煥（Ha EunHwan）</b>　1982年生。2008年畢業於成均館大學校醫科大學。",
+   "2013年起在首爾江南開設美容診所，並發展為連鎖。十三年過去，現在仍在經營。香港有三間，也正在準備於美國開業。",
+   "因為工作上需要用到AI，才開始研讀人文學與哲學。順序看起來或許是反的——但<b>不先問「人是什麼」，就做不出AI。</b>",
+  ]),
+ "zh-hans": dict(
+  title="关于ヨヨイ — 是谁做的，为什么做",
+  desc="由在首尔江南经营美容诊所十三年的人，在名古屋开始的服务。人，是会说话的。连起来，由我们来做。",
+  h="我们为什么做这件事",
+  body=[
+   "我们在首尔江南经营美容诊所已经十三年。客人大多是二十到四十多岁的女性。",
+   "那些客人会来日本。而她们在这里会遇到什么，我们知道。",
+   "旅途中冒出日文。用翻译一跑，网页就坏了。想从官网订位，却要日本的电话号码。",
+   "旅行不该是这样。旅行就该像旅行——看看天空，遇见人，触碰文化。",
+   "店家也一样。做菜、和客人说笑的时间，不该花在盯着订位页面上。",
+  ],
+  ph="人，是会说话的。",
+  ps="想做什么，说出来就好。卖什么，说出来就好。连起来，由我们来做。",
+  who="做这件事的人",
+  bio=[
+   "<b>河恩焕（Ha EunHwan）</b>　1982年生。2008年毕业于成均馆大学校医科大学。",
+   "2013年起在首尔江南开设美容诊所，并发展为连锁。十三年过去，现在仍在经营。香港有三间，也正在准备于美国开业。",
+   "因为工作上需要用到AI，才开始研读人文学与哲学。顺序看起来或许是反的——但<b>不先问「人是什么」，就做不出AI。</b>",
+  ]),
+ "th": dict(
+  title="เกี่ยวกับ Yoyoi — ใครสร้าง และทำไม",
+  desc="บริการที่เริ่มต้นในนาโกย่า โดยผู้ที่เปิดคลินิกความงามในคังนัม กรุงโซล มาสิบสามปี คนเราพูดได้ ส่วนการเชื่อมต่อ เราจัดการเอง",
+  h="ทำไมเราถึงทำสิ่งนี้",
+  body=[
+   "เราเปิดคลินิกความงามที่ย่านคังนัม กรุงโซล มาสิบสามปีแล้ว ลูกค้าส่วนใหญ่เป็นผู้หญิงวัยยี่สิบถึงสี่สิบปี",
+   "ลูกค้าเหล่านั้นเดินทางมาญี่ปุ่น และเรารู้ดีว่าที่นั่นพวกเขาต้องเจอกับอะไร",
+   "ภาษาญี่ปุ่นโผล่ขึ้นมา พอใช้ตัวแปลภาษา หน้าเว็บก็พัง จะจองผ่านเว็บไซต์ ก็ต้องมีเบอร์โทรญี่ปุ่น",
+   "การเดินทางไม่ควรเป็นแบบนี้ การเดินทางควรเป็นการเดินทาง — มองท้องฟ้า พบผู้คน สัมผัสวัฒนธรรม",
+   "ร้านค้าก็เช่นกัน เวลาที่ควรใช้ทำอาหารและหัวเราะกับลูกค้า ไม่ควรหมดไปกับการจ้องหน้าจอจองคิว",
+  ],
+  ph="คนเราพูดได้",
+  ps="อยากทำอะไรก็บอกมา ขายอะไรก็บอกมา ส่วนการเชื่อมต่อ เราจัดการเอง",
+  who="คนที่สร้างสิ่งนี้",
+  bio=[
+   "<b>Ha EunHwan</b>　เกิดปี 1982 จบแพทยศาสตร์จาก Sungkyunkwan University ในปี 2008",
+   "เปิดคลินิกความงามที่คังนัม กรุงโซล ในปี 2013 และขยายเป็นแฟรนไชส์ ผ่านมาสิบสามปี ปัจจุบันยังดำเนินการอยู่ มีคลินิกในฮ่องกงสามแห่ง และกำลังเตรียมเปิดในสหรัฐอเมริกา",
+   "งานที่ทำจำเป็นต้องใช้ AI จึงเริ่มศึกษามนุษยศาสตร์และปรัชญา ลำดับอาจดูกลับกัน แต่<b>ถ้าไม่ถามก่อนว่า “มนุษย์คืออะไร” ก็สร้าง AI ไม่ได้</b>",
+  ]),
 }
+
 
 RECRUIT = dict(
  title="採用情報 — AIと一緒に働く人を探しています｜ヨヨイ",
@@ -415,7 +478,7 @@ def aboutpage(lang):
 <h2>{html.escape(a['who'])}</h2>
 <div class="prose">{bio}</div>
 {rec}"""
-    return shell(lang, a["title"], a["desc"], "ヨヨイ,Yoyoi,名古屋,about", "%s/%s/about/"%(SITE,v["dir"]), body, "about/")
+    return shell(lang, a["title"], a["desc"], "ヨヨイ,Yoyoi,名古屋,about", "%s/%s/about/"%(SITE,v["dir"]), body, "about/", only=list(ABOUT.keys()))
 
 def recruitpage():
     v=LANGS["ja"]; r=RECRUIT
@@ -442,7 +505,7 @@ def recruitpage():
 <div class="btns"><a class="p" href="mailto:{CONTACT}?subject={urllib.parse.quote('ヨヨイ 採用応募')}">{html.escape(r['btn'])}</a></div>
 </div>
 <script type="application/ld+json">{ld}</script>"""
-    return shell("ja", r["title"], r["desc"], "名古屋,求人,正社員,採用,ヨヨイ", "%s/ja/recruit/"%SITE, body, "recruit/")
+    return shell("ja", r["title"], r["desc"], "名古屋,求人,正社員,採用,ヨヨイ", "%s/ja/recruit/"%SITE, body, "recruit/", only=["ja"])
 
 def formbox(v):
     return f"""<div class="box">
@@ -566,7 +629,7 @@ def shoppage(lang):
 </div>
 </div>
 <a class="back" href="{SITE}/{v['dir']}/">← ヨヨイ</a>"""
-    return shell(lang, c['title'], c['sub'], v['kw'], "%s/%s/shops/"%(SITE,v['dir']), body, "shops/")
+    return shell(lang, c['title'], c['sub'], v['kw'], "%s/%s/shops/"%(SITE,v['dir']), body, "shops/", only=list(SHOP.keys()))
 
 
 # ── 지역 페이지 ──────────────────────────────────────────
