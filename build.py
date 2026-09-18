@@ -998,14 +998,17 @@ def listpage(lang, item, kind):
     return shell(lang, "%s | ヨヨイ"%item["t"][lang], item["d"][lang], v["kw"],
                  "%s/%s/%s"%(SITE,v["dir"],sub), body, sub)
 
-CITYBAR = dict(ja=("名古屋","京都"), en=("Nagoya","Kyoto"), ko=("나고야","교토"),
-  **{"zh-hant":("名古屋","京都"), "zh-hans":("名古屋","京都"), "th":("นาโกยา","เกียวโต")})
+CITYNAMES = dict(ja=("名古屋","京都","大阪"), en=("Nagoya","Kyoto","Osaka"), ko=("나고야","교토","오사카"),
+  **{"zh-hant":("名古屋","京都","大阪"), "zh-hans":("名古屋","京都","大阪"), "th":("นาโกยา","เกียวโต","โอซาก้า")})
+CITYPATH = (("nagoya",""), ("kyoto","kyoto/"), ("osaka","osaka/"))
 
 def citybar(lang, here):
-    n,k = CITYBAR[lang]; d=LANGS[lang]["dir"]
-    a = '<a href="%s/%s/"%s>%s</a>' % (SITE,d,' aria-current="page"' if here=="nagoya" else '',html.escape(n))
-    b = '<a href="%s/%s/kyoto/"%s>%s</a>' % (SITE,d,' aria-current="page"' if here=="kyoto" else '',html.escape(k))
-    return '<nav class="langs" style="margin:.2rem 0 1rem">%s%s</nav>' % (a,b)
+    d=LANGS[lang]["dir"]; names=CITYNAMES[lang]
+    out=[]
+    for (key,p),nm in zip(CITYPATH,names):
+        cur=' aria-current="page"' if key==here else ''
+        out.append('<a href="%s/%s/%s"%s>%s</a>' % (SITE,d,p,cur,html.escape(nm)))
+    return '<nav class="langs" style="margin:.2rem 0 1rem">%s</nav>' % "".join(out)
 
 if os.path.isdir(OUT): shutil.rmtree(OUT)
 os.makedirs(OUT)
@@ -1142,15 +1145,98 @@ KY_AREAS = [
              "th":"มื้อกลางวันเต็มเร็ว และปิดรับออร์เดอร์เร็ว จองล่วงหน้าได้หรือไม่ ตัดสินทั้งวัน"})),
 ]
 
-def kyhome(lang):
-    v=KY_LANGS[lang]; d=LANGS[lang]["dir"]
-    cats="".join('<li><a href="%s/%s/kyoto/%s/"><b>%s</b><small>%s</small></a></li>'%(
-        SITE,d,c["slug"],html.escape(c["t"][lang]),html.escape(c["d"][lang])) for c in KY_CATS)
-    areas="".join('<li><a href="%s/%s/kyoto/area/%s/"><b>%s</b><small>%s</small></a></li>'%(
-        SITE,d,a["slug"],html.escape(a["t"][lang]),html.escape(a["d"][lang])) for a in KY_AREAS)
+def sw(x, lang, swap):
+    if isinstance(x,str):
+        for p,q in swap.get(lang,[]): x=x.replace(p,q)
+        return x
+    if isinstance(x,list): return [sw(i,lang,swap) for i in x]
+    if isinstance(x,tuple): return tuple(sw(i,lang,swap) for i in x)
+    if isinstance(x,dict): return {k:sw(vv,lang,swap) for k,vv in x.items()}
+    return x
+
+def switem(it, swap):
+    return {k:(v if k=="slug" else ({l:sw(v[l],l,swap) for l in v} if isinstance(v,dict) else v)) for k,v in it.items()}
+
+# ══════════════════════════════════════════════════════════
+#  大阪 — 도시 3호 (2026-09-18). 교토와 같은 틀.
+# ══════════════════════════════════════════════════════════
+OS_SWAP = {
+ "ja":[("名古屋めし","大阪の味"),("名古屋","大阪"),("栄","難波"),("大須","心斎橋"),("矢場町","本町")],
+ "en":[("Nagoya","Osaka"),("Sakae","Namba"),("Osu","Shinsaibashi")],
+ "ko":[("나고야","오사카"),("사카에","난바"),("오스","신사이바시")],
+ "zh-hant":[("名古屋","大阪"),("榮","難波"),("大須","心齋橋")],
+ "zh-hans":[("名古屋","大阪"),("荣","难波"),("大须","心斋桥")],
+ "th":[("นาโกย่า","โอซาก้า"),("นาโกยา","โอซาก้า"),("ซาคาเอะ","นัมบะ"),("โอสุ","ชินไซบาชิ")],
+}
+OS_CATS = [switem(c,OS_SWAP) for c in CATS if c["slug"]!="hitsumabushi"] + [
+ dict(slug="okonomiyaki",
+   t=dict(en="Okonomiyaki & kushikatsu reservations", ja="お好み焼き・串カツの予約", ko="오코노미야키·쿠시카츠 예약",
+      **{"zh-hant":"大阪燒與炸串訂位","zh-hans":"大阪烧与炸串订位","th":"จองร้านโอโคโนมิยากิและคุชิคัตสึ"}),
+   d=dict(en="The famous ones have lines out the door. The good local ones take a few bookings — in Japanese.",
+      ja="有名店は行列。地元の良い店は、少ない予約枠を日本語で受けています。",
+      ko="유명한 곳은 줄이 깁니다. 동네 맛집은 적은 예약을 일본어로만 받습니다.",
+      **{"zh-hant":"名店大排長龍。好的在地小店只以日語接受少量預約。",
+         "zh-hans":"名店大排长龙。好的在地小店只以日语接受少量预约。",
+         "th":"ร้านดังต่อคิวยาว ร้านท้องถิ่นดีๆ รับจองไม่กี่ที่ และเป็นภาษาญี่ปุ่นเท่านั้น"})),
+]
+OS_AREAS = [
+ dict(slug="namba", t=dict(en="Namba & Shinsaibashi", ja="難波・心斎橋", ko="난바·신사이바시",
+      **{"zh-hant":"難波・心齋橋","zh-hans":"难波・心斋桥","th":"นัมบะ・ชินไซบาชิ"}),
+   d=dict(en="Where most visitors stay and shop. Salons and late dinners everywhere, and the busiest places fill first.",
+          ja="多くの旅行者が泊まり、買い物をする一帯。サロンも遅い夕食も多く、人気店から埋まります。",
+          ko="여행자 대부분이 묵고 쇼핑하는 곳. 살롱도 늦은 저녁도 많고, 인기 있는 곳부터 찹니다.",
+          **{"zh-hant":"多數旅客住宿、購物的一帶。沙龍和深夜晚餐很多，熱門店先滿。",
+             "zh-hans":"多数旅客住宿、购物的一带。沙龙和深夜晚餐很多，热门店先满。",
+             "th":"ย่านที่นักท่องเที่ยวส่วนใหญ่พักและช้อปปิ้ง ร้านเสริมสวยและมื้อดึกเยอะ ร้านดังเต็มก่อน"})),
+ dict(slug="umeda", t=dict(en="Umeda & Kitashinchi", ja="梅田・北新地", ko="우메다·키타신치",
+      **{"zh-hant":"梅田・北新地","zh-hans":"梅田・北新地","th":"อุเมดะ・คิตะชินจิ"}),
+   d=dict(en="The north side. Kitashinchi's small counters take few guests and mostly by introduction or phone.",
+          ja="キタ。北新地の小さなカウンターは席が少なく、紹介か電話での予約が中心です。",
+          ko="북쪽 번화가. 키타신치의 작은 카운터는 자리가 적고, 소개나 전화 예약이 중심입니다.",
+          **{"zh-hant":"北區。北新地的小吧檯座位少，多半靠介紹或電話預約。",
+             "zh-hans":"北区。北新地的小吧台座位少，多半靠介绍或电话预约。",
+             "th":"ฝั่งเหนือ เคาน์เตอร์เล็กในคิตะชินจิมีที่นั่งน้อย ส่วนใหญ่ต้องมีคนแนะนำหรือจองทางโทรศัพท์"})),
+ dict(slug="tenma", t=dict(en="Tenma & Minamimorimachi", ja="天満・南森町", ko="텐마·미나미모리마치",
+      **{"zh-hant":"天滿・南森町","zh-hans":"天满・南森町","th":"เทนมะ・มินามิโมริมาจิ"}),
+   d=dict(en="Japan's longest shopping street and a dense block of small izakaya. Very local, very Japanese-only.",
+          ja="日本一長い商店街と、小さな居酒屋が密集する一帯。地元色が強く、日本語だけの店がほとんどです。",
+          ko="일본에서 가장 긴 상점가와 작은 이자카야가 빽빽한 곳. 동네 색이 강하고 거의 일본어만 됩니다.",
+          **{"zh-hant":"日本最長的商店街，小居酒屋密集。在地色彩濃，幾乎只通日語。",
+             "zh-hans":"日本最长的商店街，小居酒屋密集。在地色彩浓，几乎只通日语。",
+             "th":"ถนนช้อปปิ้งที่ยาวที่สุดในญี่ปุ่น และอิซากายะเล็กๆ หนาแน่น บรรยากาศท้องถิ่น ส่วนใหญ่ใช้ภาษาญี่ปุ่นเท่านั้น"})),
+ dict(slug="honmachi", t=dict(en="Honmachi & Kitahama", ja="本町・北浜", ko="혼마치·키타하마",
+      **{"zh-hant":"本町・北濱","zh-hans":"本町・北滨","th":"ฮมมาจิ・คิตะฮามะ"}),
+   d=dict(en="Between the two centers. Quieter, business hotels, and good salons that locals book ahead.",
+          ja="キタとミナミの間。落ち着いた街で、ビジネスホテルと、地元の人が先に予約する良いサロンがあります。",
+          ko="북쪽과 남쪽 번화가 사이. 조용하고 비즈니스호텔이 많으며, 현지인이 미리 예약하는 좋은 살롱이 있습니다.",
+          **{"zh-hant":"南北兩大鬧區之間。較安靜，商務旅館多，也有在地人提前預約的好沙龍。",
+             "zh-hans":"南北两大闹区之间。较安静，商务酒店多，也有在地人提前预约的好沙龙。",
+             "th":"ระหว่างสองย่านใหญ่ เงียบกว่า มีโรงแรมธุรกิจ และร้านเสริมสวยดีๆ ที่คนท้องถิ่นจองล่วงหน้า"})),
+]
+
+def mkcity(key, swap, cats, areas, recsw):
+    return dict(key=key, cats=cats, areas=areas, recsw=recsw,
+                L={l:{k:(v if k in KEEP else sw(v,l,swap)) for k,v in LANGS[l].items()} for l in LANGS})
+
+CITIES = [
+  mkcity("kyoto", CITY_SWAP, KY_CATS, KY_AREAS, {}),
+  mkcity("osaka", OS_SWAP, OS_CATS, OS_AREAS, {"ja":[("京都","大阪")],"ko":[("교토","오사카")]}),
+]
+
+def c_home(lang, C):
+    v=C["L"][lang]; d=LANGS[lang]["dir"]; k=C["key"]
+    cats="".join('<li><a href="%s/%s/%s/%s/"><b>%s</b><small>%s</small></a></li>'%(
+        SITE,d,k,c["slug"],html.escape(c["t"][lang]),html.escape(c["d"][lang])) for c in C["cats"])
+    areas="".join('<li><a href="%s/%s/%s/area/%s/"><b>%s</b><small>%s</small></a></li>'%(
+        SITE,d,k,a["slug"],html.escape(a["t"][lang]),html.escape(a["d"][lang])) for a in C["areas"])
     steps="".join("<li><b>%s</b><span>%s</span></li>"%(html.escape(a),html.escape(b)) for a,b in v["steps"])
     w=WHY[lang]
-    body=f"""{citybar(lang,"kyoto")}
+    rec=""
+    if lang in KYREC:
+        rt = "お電話をかけてくださる方を探しています" if lang=="ja" else "전화를 걸어주실 분을 찾습니다"
+        rs = sw("京都・在宅・スマートフォンだけで" if lang=="ja" else "교토·재택·스마트폰만으로", lang, C["recsw"])
+        rec='<li><a href="%s/%s/%s/recruit/"><b>%s</b><small>%s</small></a></li>'%(SITE,d,k,rt,rs)
+    body=f"""{citybar(lang,k)}
 <div class="why-hero"><b>{html.escape(w[0])}</b><span>{html.escape(w[1])}</span></div>
 <h1>{v['tagline']}</h1>
 <p class="sub">{html.escape(v['sub'])}</p>
@@ -1165,39 +1251,32 @@ def kyhome(lang):
 <ul class="why">{"".join("<li>%s</li>"%x for x in v['pay'])}</ul>
 <ul class="cats">{cats}</ul>
 <ul class="cats">{areas}</ul>
-<ul class="cats"><li><a href="{SITE}/{d}/kyoto/shops/"><b>{html.escape(v['shop_cta'])}</b><small>{html.escape(v['shop_h'])}</small></a></li>
-{f'<li><a href="{SITE}/{d}/kyoto/recruit/"><b>' + ("お電話をかけてくださる方を探しています" if lang=="ja" else "전화를 걸어주실 분을 찾습니다") + '</b><small>' + ("京都・在宅・スマートフォンだけで" if lang=="ja" else "교토·재택·스마트폰만으로") + '</small></a></li>' if lang in KYREC else ""}</ul>"""
+<ul class="cats"><li><a href="{SITE}/{d}/{k}/shops/"><b>{html.escape(v['shop_cta'])}</b><small>{html.escape(v['shop_h'])}</small></a></li>
+{rec}</ul>"""
     t = "ヨヨイ Yoyoi — %s" % (v["tagline"].replace("<br>"," ").strip())
-    return shell(lang, t, v["sub"], v["kw"], "%s/%s/kyoto/"%(SITE,d), body, "kyoto/", foot=v["foot"])
+    return shell(lang, t, v["sub"], v["kw"], "%s/%s/%s/"%(SITE,d,k), body, k+"/", foot=v["foot"])
 
-def kycatpage(lang, c):
-    v=KY_LANGS[lang]; d=LANGS[lang]["dir"]
-    body=f"""<h1>{html.escape(c['t'][lang])}</h1>
-<p class="sub">{html.escape(c['d'][lang])}</p>
+def c_list(lang, C, it, sub):
+    v=C["L"][lang]; d=LANGS[lang]["dir"]; k=C["key"]
+    body=f"""{citybar(lang,k)}
+<h1>{html.escape(it['t'][lang])}</h1>
+<p class="sub">{html.escape(it['d'][lang])}</p>
 <ul class="chips">{"".join("<li>%s</li>"%html.escape(p) for p in v['promise'])}</ul>
 {formbox(v,lang)}
 <h2 class="sec">{html.escape(v['why_h'])}</h2>
 <ul class="why">{"".join("<li>%s</li>"%x for x in v['why'])}</ul>
-<a class="back" href="{SITE}/{d}/kyoto/">← ヨヨイ</a>"""
-    return shell(lang, "%s | ヨヨイ"%c["t"][lang], c["d"][lang], v["kw"],
-                 "%s/%s/kyoto/%s/"%(SITE,d,c["slug"]), body, "kyoto/%s/"%c["slug"], foot=v["foot"])
+<a class="back" href="{SITE}/{d}/{k}/">← ヨヨイ</a>"""
+    return shell(lang, "%s | ヨヨイ"%it["t"][lang], it["d"][lang], v["kw"],
+                 "%s/%s/%s/%s"%(SITE,d,k,sub), body, "%s/%s"%(k,sub), foot=v["foot"])
 
-def kyareapage(lang, a):
-    v=KY_LANGS[lang]; d=LANGS[lang]["dir"]
-    body=f"""<h1>{html.escape(a['t'][lang])}</h1>
-<p class="sub">{html.escape(a['d'][lang])}</p>
-<ul class="chips">{"".join("<li>%s</li>"%html.escape(p) for p in v['promise'])}</ul>
-{formbox(v,lang)}
-<h2 class="sec">{html.escape(v['why_h'])}</h2>
-<ul class="why">{"".join("<li>%s</li>"%x for x in v['why'])}</ul>
-<a class="back" href="{SITE}/{d}/kyoto/">← ヨヨイ</a>"""
-    return shell(lang, "%s | ヨヨイ"%a["t"][lang], a["d"][lang], v["kw"],
-                 "%s/%s/kyoto/area/%s/"%(SITE,d,a["slug"]), body, "kyoto/area/%s/"%a["slug"], foot=v["foot"])
-
-def kyshoppage(lang):
-    v=KY_LANGS[lang]; c=ky(SHOP[lang],lang); d=LANGS[lang]["dir"]
+def c_shop(lang, C):
+    v=C["L"][lang]; d=LANGS[lang]["dir"]; k=C["key"]
+    c={kk:(vv if kk in KEEP else sw(vv,lang,{})) for kk,vv in SHOP[lang].items()}
+    # SHOP 원문은 나고야 기준이므로 그 도시 이름으로 바꾼다
+    c=sw(SHOP[lang], lang, {l:[(CITYNAMES[l][0],CITYNAMES[l][[p[0] for p in CITYPATH].index(k)])] + ([("นาโกย่า",CITYNAMES[l][[p[0] for p in CITYPATH].index(k)])] if l=="th" else []) for l in LANGS})
     def ul(items): return "".join("<li>%s</li>"%i for i in items)
-    body=f"""<h1>{c['h1']}</h1>
+    body=f"""{citybar(lang,k)}
+<h1>{c['h1']}</h1>
 <p class="sub">{c['sub']}</p>
 <h2 class="sec">{html.escape(c['lead_h'])}</h2>
 <ul class="why">{ul(c['lead'])}</ul>
@@ -1212,10 +1291,9 @@ def kyshoppage(lang):
 <div class="btns"><button class="p" id="m" type="button">{v['btn_mail']}</button>
 <button class="s" id="c" type="button" data-done="{v['copied']}">{v['btn_copy']}</button></div>
 <p class="note">{v['note']}</p></div>
-<a class="back" href="{SITE}/{d}/kyoto/">← ヨヨイ</a>"""
+<a class="back" href="{SITE}/{d}/{k}/">← ヨヨイ</a>"""
     return shell(lang, c["title"], c["sub"].replace("<br>"," "), v["kw"],
-                 "%s/%s/kyoto/shops/"%(SITE,d), body, "kyoto/shops/", only=list(SHOP.keys()), foot=v["foot"])
-
+                 "%s/%s/%s/shops/"%(SITE,d,k), body, k+"/shops/", only=list(SHOP.keys()), foot=v["foot"])
 
 # ── 京都: お電話をかけてくださる方の募集 (어르신 모집) ──────────────
 KYREC = {
@@ -1265,11 +1343,12 @@ KYREC = {
   ph="예: 성함, 사시는 지역, 전화 가능한 시간대."),
 }
 
-def kyrecruitpage(lang):
-    v=KY_LANGS[lang]; r=KYREC[lang]; d=LANGS[lang]["dir"]
+def c_recruit(lang, C):
+    v=C["L"][lang]; d=LANGS[lang]["dir"]; k=C["key"]
+    r=sw(KYREC[lang], lang, C["recsw"])
     secs="".join('<h2 class="sec">%s</h2><ul class="why">%s</ul>'%(
         html.escape(t), "".join("<li>%s</li>"%x for x in items)) for t,items in r["secs"])
-    body=f"""{citybar(lang,"kyoto")}
+    body=f"""{citybar(lang,k)}
 <h1>{r['h1']}</h1>
 <p class="sub">{html.escape(r['sub'])}</p>
 {secs}
@@ -1278,30 +1357,27 @@ def kyrecruitpage(lang):
 <div class="btns"><button class="p" id="m" type="button">{v['btn_mail']}</button>
 <button class="s" id="c" type="button" data-done="{v['copied']}">{v['btn_copy']}</button></div>
 <p class="note">{v['note']}</p></div>
-<a class="back" href="{SITE}/{d}/kyoto/">← ヨヨイ</a>"""
-    return shell(lang, r["title"], r["desc"], v["kw"], "%s/%s/kyoto/recruit/"%(SITE,d),
-                 body, "kyoto/recruit/", only=list(KYREC.keys()), foot=v["foot"])
+<a class="back" href="{SITE}/{d}/{k}/">← ヨヨイ</a>"""
+    return shell(lang, r["title"], r["desc"], v["kw"], "%s/%s/%s/recruit/"%(SITE,d,k),
+                 body, k+"/recruit/", only=list(KYREC.keys()), foot=v["foot"])
 
-for lang,v in LANGS.items():
-    d=os.path.join(OUT,v["dir"],"kyoto"); os.makedirs(d,exist_ok=True)
-    open(os.path.join(d,"index.html"),"w",encoding="utf-8").write(kyhome(lang))
-    urls.append("%s/%s/kyoto/"%(SITE,v["dir"]))
-    for c in KY_CATS:
-        dd=os.path.join(d,c["slug"]); os.makedirs(dd,exist_ok=True)
-        open(os.path.join(dd,"index.html"),"w",encoding="utf-8").write(kycatpage(lang,c))
-        urls.append("%s/%s/kyoto/%s/"%(SITE,v["dir"],c["slug"]))
-    for a in KY_AREAS:
-        ad=os.path.join(d,"area",a["slug"]); os.makedirs(ad,exist_ok=True)
-        open(os.path.join(ad,"index.html"),"w",encoding="utf-8").write(kyareapage(lang,a))
-        urls.append("%s/%s/kyoto/area/%s/"%(SITE,v["dir"],a["slug"]))
-    if lang in SHOP:
-        sd=os.path.join(d,"shops"); os.makedirs(sd,exist_ok=True)
-        open(os.path.join(sd,"index.html"),"w",encoding="utf-8").write(kyshoppage(lang))
-        urls.append("%s/%s/kyoto/shops/"%(SITE,v["dir"]))
-    if lang in KYREC:
-        rd=os.path.join(d,"recruit"); os.makedirs(rd,exist_ok=True)
-        open(os.path.join(rd,"index.html"),"w",encoding="utf-8").write(kyrecruitpage(lang))
-        urls.append("%s/%s/kyoto/recruit/"%(SITE,v["dir"]))
+def wr(path, html_):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    open(path,"w",encoding="utf-8").write(html_)
+
+for C in CITIES:
+    k=C["key"]
+    for lang,v in LANGS.items():
+        base=os.path.join(OUT,v["dir"],k); u="%s/%s/%s/"%(SITE,v["dir"],k)
+        wr(os.path.join(base,"index.html"), c_home(lang,C)); urls.append(u)
+        for c in C["cats"]:
+            wr(os.path.join(base,c["slug"],"index.html"), c_list(lang,C,c,c["slug"]+"/")); urls.append(u+c["slug"]+"/")
+        for a in C["areas"]:
+            wr(os.path.join(base,"area",a["slug"],"index.html"), c_list(lang,C,a,"area/%s/"%a["slug"])); urls.append(u+"area/%s/"%a["slug"])
+        if lang in SHOP:
+            wr(os.path.join(base,"shops","index.html"), c_shop(lang,C)); urls.append(u+"shops/")
+        if lang in KYREC:
+            wr(os.path.join(base,"recruit","index.html"), c_recruit(lang,C)); urls.append(u+"recruit/")
 
 open(os.path.join(OUT,"sitemap.xml"),"w",encoding="utf-8").write(
  '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
