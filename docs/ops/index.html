@@ -1,0 +1,70 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>ヨヨイ 안쪽 화면</title><style>
+*{box-sizing:border-box}
+:root{--bg:#fbfaf8;--fg:#17140f;--mut:#6b655c;--acc:#b23b2e;--line:#e6e1d8;--ok:#1f7a4d;--no:#a8321f;--card:#fff}
+@media (prefers-color-scheme:dark){:root{--bg:#14120f;--fg:#f2efe9;--mut:#a29b90;--line:#2e2a24;--card:#1c1916}}
+html,body{margin:0;background:var(--bg);color:var(--fg);
+ font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+ font-size:20px;line-height:1.6;-webkit-text-size-adjust:100%}
+.wrap{max-width:720px;margin:0 auto;padding:16px}
+h1{font-size:1.5rem;margin:.2rem 0 .1rem}
+.day{color:var(--mut);margin:0 0 1rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:0 0 20px}
+.card.done>*:not(.res){opacity:.42}
+.top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.shop{font-size:1.35rem;font-weight:700;line-height:1.3}
+.area{color:var(--mut);font-size:.95rem;white-space:nowrap}
+.when{font-size:1.15rem;margin:.5rem 0 .2rem}
+.who{color:var(--mut);margin:0 0 .8rem}
+.tel{display:block;text-align:center;background:var(--acc);color:#fff;text-decoration:none;
+ font-size:1.45rem;font-weight:700;padding:16px;border-radius:12px;margin:.6rem 0 1rem;letter-spacing:.02em}
+.lbl{font-size:.95rem;color:var(--mut);margin:1rem 0 .3rem;font-weight:700}
+.script{background:var(--bg);border:1px dashed var(--line);border-radius:10px;padding:14px;font-size:1.15rem;line-height:1.85}
+.script b{background:rgba(178,59,46,.14);padding:0 .15em;border-radius:3px;font-weight:700}
+ul.ask{margin:.2rem 0;padding-left:1.2rem}
+ul.ask li{margin:.35rem 0}
+.btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:1rem}
+button{font:inherit;font-weight:700;padding:16px 6px;border-radius:12px;border:2px solid var(--line);
+ background:var(--card);color:var(--fg);cursor:pointer}
+button.ok{border-color:var(--ok);color:var(--ok)}
+button.no{border-color:var(--no);color:var(--no)}
+button.later{color:var(--mut)}
+button:active{transform:translateY(1px)}
+.res{margin-top:1rem;border-top:1px solid var(--line);padding-top:1rem;display:none}
+.res.on{display:block}
+textarea{width:100%;min-height:90px;font:inherit;padding:12px;border:1px solid var(--line);
+ border-radius:10px;background:var(--bg);color:var(--fg)}
+.send{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.send a,.send button{display:block;text-align:center;text-decoration:none;padding:14px;border-radius:12px;
+ border:2px solid var(--acc);color:var(--acc);background:transparent;font-weight:700}
+.send a.p{background:var(--acc);color:#fff}
+.reasons{display:flex;flex-wrap:wrap;gap:8px;margin:.4rem 0 0}
+.reasons button{padding:10px 14px;font-size:.95rem;border-radius:999px}
+.reasons button[aria-pressed=true]{border-color:var(--acc);color:var(--acc)}
+.empty{color:var(--mut);text-align:center;padding:3rem 1rem}
+.foot{color:var(--mut);font-size:.9rem;text-align:center;padding:2rem 0 3rem}
+a.back{color:var(--acc)}
+</style></head><body>
+<div class="wrap">
+<h1>안쪽 화면</h1>
+<p class="day">손님에게 보이지 않는 곳입니다. 검색에도 안 나옵니다.</p>
+<div class="card">
+  <div class="shop"><a href="denwa/">오늘 걸 전화</a></div>
+  <div class="who">어르신 직원이 보는 화면. <code>ops/jobs.json</code> 을 채우면 여기에 카드가 생깁니다.</div>
+</div>
+<div class="card">
+  <div class="shop"><a href="card/?shop=%E4%BE%8B%E3%81%AE%E5%BA%97&amp;when=9/19 19:00&amp;people=2&amp;guest=HA&amp;tel=075-000-0000">예약 카드 (예시)</a></div>
+  <div class="who">손님이 가게 앞에서 보여주는 화면. 주소에 내용을 담아 보냅니다.</div>
+</div>
+<div class="card">
+  <div class="shop"><a href="daejang/">대장</a></div>
+  <div class="who">예약·가게·손님 기록. 두 번은 안 보낸다가 여기서 돌아갑니다.</div>
+</div>
+<div class="card">
+  <div class="shop"><a href="numbers/">숫자판</a></div>
+  <div class="who">대장에서 저절로 나오는 숫자. 파는 쪽에 보여줄 것.</div>
+</div>
+<p class="foot">ヨヨイ Yoyoi</p>
+</div></body></html>

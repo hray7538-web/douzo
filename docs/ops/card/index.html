@@ -1,0 +1,91 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>予約カード | ヨヨイ</title><style>
+*{box-sizing:border-box}
+:root{--bg:#fbfaf8;--fg:#17140f;--mut:#6b655c;--acc:#b23b2e;--line:#e6e1d8;--ok:#1f7a4d;--no:#a8321f;--card:#fff}
+@media (prefers-color-scheme:dark){:root{--bg:#14120f;--fg:#f2efe9;--mut:#a29b90;--line:#2e2a24;--card:#1c1916}}
+html,body{margin:0;background:var(--bg);color:var(--fg);
+ font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+ font-size:20px;line-height:1.6;-webkit-text-size-adjust:100%}
+.wrap{max-width:720px;margin:0 auto;padding:16px}
+h1{font-size:1.5rem;margin:.2rem 0 .1rem}
+.day{color:var(--mut);margin:0 0 1rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:0 0 20px}
+.card.done>*:not(.res){opacity:.42}
+.top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.shop{font-size:1.35rem;font-weight:700;line-height:1.3}
+.area{color:var(--mut);font-size:.95rem;white-space:nowrap}
+.when{font-size:1.15rem;margin:.5rem 0 .2rem}
+.who{color:var(--mut);margin:0 0 .8rem}
+.tel{display:block;text-align:center;background:var(--acc);color:#fff;text-decoration:none;
+ font-size:1.45rem;font-weight:700;padding:16px;border-radius:12px;margin:.6rem 0 1rem;letter-spacing:.02em}
+.lbl{font-size:.95rem;color:var(--mut);margin:1rem 0 .3rem;font-weight:700}
+.script{background:var(--bg);border:1px dashed var(--line);border-radius:10px;padding:14px;font-size:1.15rem;line-height:1.85}
+.script b{background:rgba(178,59,46,.14);padding:0 .15em;border-radius:3px;font-weight:700}
+ul.ask{margin:.2rem 0;padding-left:1.2rem}
+ul.ask li{margin:.35rem 0}
+.btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:1rem}
+button{font:inherit;font-weight:700;padding:16px 6px;border-radius:12px;border:2px solid var(--line);
+ background:var(--card);color:var(--fg);cursor:pointer}
+button.ok{border-color:var(--ok);color:var(--ok)}
+button.no{border-color:var(--no);color:var(--no)}
+button.later{color:var(--mut)}
+button:active{transform:translateY(1px)}
+.res{margin-top:1rem;border-top:1px solid var(--line);padding-top:1rem;display:none}
+.res.on{display:block}
+textarea{width:100%;min-height:90px;font:inherit;padding:12px;border:1px solid var(--line);
+ border-radius:10px;background:var(--bg);color:var(--fg)}
+.send{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.send a,.send button{display:block;text-align:center;text-decoration:none;padding:14px;border-radius:12px;
+ border:2px solid var(--acc);color:var(--acc);background:transparent;font-weight:700}
+.send a.p{background:var(--acc);color:#fff}
+.reasons{display:flex;flex-wrap:wrap;gap:8px;margin:.4rem 0 0}
+.reasons button{padding:10px 14px;font-size:.95rem;border-radius:999px}
+.reasons button[aria-pressed=true]{border-color:var(--acc);color:var(--acc)}
+.empty{color:var(--mut);text-align:center;padding:3rem 1rem}
+.foot{color:var(--mut);font-size:.9rem;text-align:center;padding:2rem 0 3rem}
+a.back{color:var(--acc)}
+</style></head><body>
+<div class="wrap" id="box">
+<h1>ご予約カード</h1>
+<p class="day">お店でこの画面をお見せください / Show this at the shop</p>
+<div class="card">
+  <div class="shop" id="shop"></div>
+  <div class="when"><span id="when"></span> ・ <span id="people"></span></div>
+  <div class="who"><span id="name"></span></div>
+  <div class="lbl">お店の方へ / To the staff</div>
+  <div class="script" id="say"></div>
+  <div class="send" style="margin-top:14px">
+    <a class="p" id="tel"></a>
+    <a id="map"></a>
+  </div>
+</div>
+<div class="card" id="notebox">
+  <div class="lbl">お伝えしてあること / Already told to the shop</div>
+  <div id="note"></div>
+</div>
+<p class="foot">ヨヨイ Yoyoi</p>
+</div>
+<script>
+function gp(){
+  try{
+    var q=location.search.replace(/^\?/,''),o={};
+    q.split('&').forEach(function(kv){ if(!kv)return; var p=kv.split('='); o[p[0]]=decodeURIComponent((p[1]||'').replace(/\+/g,' ')); });
+    if(o.d){ return JSON.parse(decodeURIComponent(escape(atob(o.d.replace(/-/g,'+').replace(/_/g,'/'))))); }
+    return o;
+  }catch(e){ return {}; }
+}
+var d=gp();
+function set(id,v){ var e=document.getElementById(id); if(v){e.textContent=v;} else {e.parentNode.style.display='none';} }
+if(!d.shop){ document.getElementById('box').innerHTML='<p class="empty">予約の情報がありません。</p>'; }
+else{
+  set('shop',d.shop); set('when',d.when); set('people',(d.people?d.people+'名':''));
+  set('name',d.guest?d.guest+' 様':'');
+  var t=document.getElementById('tel'); if(d.tel){ t.href='tel:'+d.tel.replace(/[^0-9+]/g,''); t.textContent='☎ '+d.tel; } else { t.style.display='none'; }
+  var m=document.getElementById('map');
+  if(d.addr||d.shop){ m.href='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent((d.addr||'')+' '+d.shop); m.textContent='地図 / Map'; } else { m.style.display='none'; }
+  document.getElementById('say').textContent='「'+(d.when||'')+'、'+(d.people||'')+'名、'+(d.guest||'')+'で予約しております。」';
+  if(d.note){ document.getElementById('note').textContent=d.note; } else { document.getElementById('notebox').style.display='none'; }
+}
+</script></body></html>

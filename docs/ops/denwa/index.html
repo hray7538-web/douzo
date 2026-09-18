@@ -1,0 +1,124 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>今日かけるお電話 | ヨヨイ</title><style>
+*{box-sizing:border-box}
+:root{--bg:#fbfaf8;--fg:#17140f;--mut:#6b655c;--acc:#b23b2e;--line:#e6e1d8;--ok:#1f7a4d;--no:#a8321f;--card:#fff}
+@media (prefers-color-scheme:dark){:root{--bg:#14120f;--fg:#f2efe9;--mut:#a29b90;--line:#2e2a24;--card:#1c1916}}
+html,body{margin:0;background:var(--bg);color:var(--fg);
+ font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+ font-size:20px;line-height:1.6;-webkit-text-size-adjust:100%}
+.wrap{max-width:720px;margin:0 auto;padding:16px}
+h1{font-size:1.5rem;margin:.2rem 0 .1rem}
+.day{color:var(--mut);margin:0 0 1rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:0 0 20px}
+.card.done>*:not(.res){opacity:.42}
+.top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.shop{font-size:1.35rem;font-weight:700;line-height:1.3}
+.area{color:var(--mut);font-size:.95rem;white-space:nowrap}
+.when{font-size:1.15rem;margin:.5rem 0 .2rem}
+.who{color:var(--mut);margin:0 0 .8rem}
+.tel{display:block;text-align:center;background:var(--acc);color:#fff;text-decoration:none;
+ font-size:1.45rem;font-weight:700;padding:16px;border-radius:12px;margin:.6rem 0 1rem;letter-spacing:.02em}
+.lbl{font-size:.95rem;color:var(--mut);margin:1rem 0 .3rem;font-weight:700}
+.script{background:var(--bg);border:1px dashed var(--line);border-radius:10px;padding:14px;font-size:1.15rem;line-height:1.85}
+.script b{background:rgba(178,59,46,.14);padding:0 .15em;border-radius:3px;font-weight:700}
+ul.ask{margin:.2rem 0;padding-left:1.2rem}
+ul.ask li{margin:.35rem 0}
+.btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:1rem}
+button{font:inherit;font-weight:700;padding:16px 6px;border-radius:12px;border:2px solid var(--line);
+ background:var(--card);color:var(--fg);cursor:pointer}
+button.ok{border-color:var(--ok);color:var(--ok)}
+button.no{border-color:var(--no);color:var(--no)}
+button.later{color:var(--mut)}
+button:active{transform:translateY(1px)}
+.res{margin-top:1rem;border-top:1px solid var(--line);padding-top:1rem;display:none}
+.res.on{display:block}
+textarea{width:100%;min-height:90px;font:inherit;padding:12px;border:1px solid var(--line);
+ border-radius:10px;background:var(--bg);color:var(--fg)}
+.send{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.send a,.send button{display:block;text-align:center;text-decoration:none;padding:14px;border-radius:12px;
+ border:2px solid var(--acc);color:var(--acc);background:transparent;font-weight:700}
+.send a.p{background:var(--acc);color:#fff}
+.reasons{display:flex;flex-wrap:wrap;gap:8px;margin:.4rem 0 0}
+.reasons button{padding:10px 14px;font-size:.95rem;border-radius:999px}
+.reasons button[aria-pressed=true]{border-color:var(--acc);color:var(--acc)}
+.empty{color:var(--mut);text-align:center;padding:3rem 1rem}
+.foot{color:var(--mut);font-size:.9rem;text-align:center;padding:2rem 0 3rem}
+a.back{color:var(--acc)}
+</style></head><body>
+<div class="wrap">
+<h1>今日かけるお電話</h1>
+<p class="day" id="day">…</p>
+<div id="list"></div>
+<p class="foot">終わったら「メールで送る」を押してください。<br>それだけで大丈夫です。</p>
+</div>
+<script>
+var MAIL='hray7538@gmail.com';
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+function script(j){
+  var n=j.people, t=j.when, g=j.guest||'', note=(j.notes||[]);
+  var s='お世話になります。<b>予約のお願い</b>でお電話しました。<br>'
+      + '<b>'+esc(t)+'</b>、<b>'+esc(String(n))+'名</b>でお願いできますでしょうか。<br>'
+      + 'お名前は<b>'+esc(g)+'</b>様です。<b>海外からのお客様</b>で、日本語は話されません。<br>'
+      + '私がヨヨイという予約の代行をしておりまして、当日のご案内も私どもでいたします。';
+  if(note.length) s += '<br>ご確認をお願いしたいのは、'+note.map(esc).join('、')+' です。';
+  return s;
+}
+function card(j,i){
+  var c=el('div','card'); c.id='j'+i;
+  var top=el('div','top'); top.appendChild(el('div','shop',j.shop));
+  if(j.area) top.appendChild(el('div','area',j.area));
+  c.appendChild(top);
+  c.appendChild(el('div','when',j.when+' ・ '+j.people+'名'));
+  c.appendChild(el('div','who',(j.guest||'')+(j.lang?'（'+j.lang+'）':'')));
+  var a=el('a','tel','☎ '+j.tel); a.href='tel:'+j.tel.replace(/[^0-9+]/g,''); c.appendChild(a);
+  c.appendChild(el('div','lbl','そのまま読んでください'));
+  var sc=el('div','script'); sc.innerHTML=script(j); c.appendChild(sc);
+  if((j.notes||[]).length){
+    c.appendChild(el('div','lbl','聞くこと'));
+    var ul=el('ul','ask'); (j.notes).forEach(function(n){ul.appendChild(el('li',null,n));});
+    ul.appendChild(el('li',null,'お会計の方法（カードが使えるか）'));
+    c.appendChild(ul);
+  }
+  var b=el('div','btns');
+  var ok=el('button','ok','取れた'), no=el('button','no','だめ'), la=el('button','later','あとで');
+  b.appendChild(ok); b.appendChild(no); b.appendChild(la); c.appendChild(b);
+  var res=el('div','res'); c.appendChild(res);
+  function open_(kind){
+    res.className='res on'; res.innerHTML='';
+    var ta=el('textarea');
+    if(kind==='ok'){ ta.value=j.shop+' 取れました。'+j.when+' '+j.people+'名。\n席：\n注意：\n'; }
+    else if(kind==='no'){
+      res.appendChild(el('div','lbl','理由'));
+      var rs=el('div','reasons');
+      ['満席','外国人お断り','電話つながらず','条件が合わない'].forEach(function(r){
+        var rb=el('button',null,r); rb.setAttribute('aria-pressed','false');
+        rb.onclick=function(){ rb.setAttribute('aria-pressed','true'); ta.value=j.shop+' だめでした。理由：'+r+'\n'; };
+        rs.appendChild(rb);
+      });
+      res.appendChild(rs);
+      ta.value=j.shop+' だめでした。理由：\n';
+    } else { ta.value=j.shop+' あとでかけ直します。'+'\n時間：\n'; }
+    res.appendChild(ta);
+    var send=el('div','send');
+    var mail=el('a','p','メールで送る'); mail.href='#';
+    mail.onclick=function(){ mail.href='mailto:'+MAIL+'?subject='+encodeURIComponent('[電話] '+j.shop)+'&body='+encodeURIComponent(ta.value); };
+    var cp=el('button',null,'コピー');
+    cp.onclick=function(){ ta.select(); try{document.execCommand('copy');cp.textContent='コピーしました';}catch(e){} };
+    send.appendChild(mail); send.appendChild(cp); res.appendChild(send);
+    c.className='card done';
+  }
+  ok.onclick=function(){open_('ok');}; no.onclick=function(){open_('no');}; la.onclick=function(){open_('later');};
+  return c;
+}
+fetch('../jobs.json?'+Date.now()).then(function(r){return r.json();}).then(function(d){
+  document.getElementById('day').textContent=(d.date||'')+' ・ '+(d.jobs||[]).length+'件';
+  var w=document.getElementById('list');
+  if(!d.jobs||!d.jobs.length){ w.appendChild(el('div','empty','今日かけるお電話はありません。')); return; }
+  d.jobs.forEach(function(j,i){ w.appendChild(card(j,i)); });
+}).catch(function(e){
+  document.getElementById('list').appendChild(el('div','empty','読み込めませんでした。'+e));
+});
+</script></body></html>

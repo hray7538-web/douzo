@@ -1,0 +1,5 @@
+{
+ "ad_spend": 0,
+ "note": "status: asked(전화 대기) / confirmed(확정) / rejected(거절) / came(왔음) / noshow(안 옴) / cancel(취소). ad_spend 는 이번 달 광고비(엔).",
+ "bookings": []
+}
