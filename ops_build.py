@@ -269,9 +269,10 @@ Promise.all([
     ['상태',function(r){return S[r.status]||r.status||'';},true]
   ]));
   document.getElementById('ps').appendChild(tbl(SH,[
-    ['가게',function(r){return r.name||'';}],
+    ['도시',function(r){return r.city||'';}],
+    ['가게',function(r){return (r.name||'')+(r.kind?' · '+r.kind:'');}],
     ['지역',function(r){return r.area||'';}],
-    ['전화',function(r){return r.tel||'';}],
+    ['창구',function(r){return r.ch||r.tel||'';}],
     ['받아줌',function(r){return r.ok===true?'○':(r.ok===false?'×':'—');}],
     ['메모',function(r){return r.note||'';}]
   ]));

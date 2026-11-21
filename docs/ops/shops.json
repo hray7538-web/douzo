@@ -1,6 +1,159 @@
 {
- "note": "ok: true=받아줌, false=거절, 없으면 아직 모름. 2026-09-18 후보 16곳(조사만, 연락 전)",
+ "note": "ok: true=받아줌, false=거절, 없으면 아직 모름. ch=글로 닿는 창구. 2026-09-18 조사만(연락 전). 글 창구 있는 곳이 위, 전화만 되는 교토 식당 16곳은 아래",
  "shops": [
+  {
+   "city": "大阪",
+   "name": "全力ストレッチ 天満南森町店",
+   "area": "南森町 1分",
+   "kind": "強圧ストレッチ",
+   "ch": "LINE lin.ee/rTlalht",
+   "rating": "HPB 4.64",
+   "note": "「LINEで予約」。CABIN PRESIDENT 目の前"
+  },
+  {
+   "city": "大阪",
+   "name": "台湾式足つぼ・整体 莉莉",
+   "area": "南森町 1分",
+   "kind": "台湾式指圧・足つぼ",
+   "ch": "LINE lin.ee/c7i4RYU",
+   "rating": "HPB 4.90",
+   "note": "LINE 2出典で確認"
+  },
+  {
+   "city": "大阪",
+   "name": "天神橋三丁目接骨院",
+   "area": "南森町 2分",
+   "kind": "接骨院・整体",
+   "ch": "LINE lin.ee/QiBghmv",
+   "rating": "HPB 4.89",
+   "note": "「LINEで予約」"
+  },
+  {
+   "city": "大阪",
+   "name": "からだケアサロン ぱるま",
+   "area": "天満",
+   "kind": "もみほぐし",
+   "ch": "LINE lin.ee/6KVXtMa",
+   "rating": "HPB 4.90",
+   "note": ""
+  },
+  {
+   "city": "大阪",
+   "name": "北浜・堺筋本町こころ整骨院",
+   "area": "北浜",
+   "kind": "整骨院",
+   "ch": "LINE page.line.me/pqh8734v",
+   "rating": "",
+   "note": "「LINE予約」"
+  },
+  {
+   "city": "大阪",
+   "name": "グレフル鍼灸接骨院",
+   "area": "心斎橋",
+   "kind": "指圧・整体",
+   "ch": "LINE page.line.me/dzu4889x",
+   "rating": "",
+   "note": "観光客向け英語指圧ページ"
+  },
+  {
+   "city": "大阪",
+   "name": "エムネイル M-Nail",
+   "area": "心斎橋",
+   "kind": "ネイル",
+   "ch": "LINE @mnail / DM",
+   "rating": "HPB 4.78",
+   "note": "「DMからもご予約」"
+  },
+  {
+   "city": "大阪",
+   "name": "ミスティカル",
+   "area": "心斎橋",
+   "kind": "まつげエクステ",
+   "ch": "LINE page.line.me/edb5412w",
+   "rating": "",
+   "note": ""
+  },
+  {
+   "city": "大阪",
+   "name": "le cherien by NEOhair",
+   "area": "南森町",
+   "kind": "美容室",
+   "ch": "LINE @807fyktl",
+   "rating": "",
+   "note": ""
+  },
+  {
+   "city": "大阪",
+   "name": "seule et coco",
+   "area": "南森町",
+   "kind": "美容室",
+   "ch": "LINE lin.ee/ADR2ABk",
+   "rating": "",
+   "note": ""
+  },
+  {
+   "city": "大阪",
+   "name": "FLOW",
+   "area": "大国町",
+   "kind": "整体・指圧(1人)",
+   "ch": "WhatsApp のみ",
+   "rating": "",
+   "note": "英語サイト"
+  },
+  {
+   "city": "京都",
+   "name": "祇園てんぐ堂",
+   "area": "祇園",
+   "kind": "ストレッチ+指圧(強め)",
+   "ch": "LINE @066odlxo / WhatsApp wa.me/+819091190238 / tengudou69@gmail.com",
+   "rating": "TripAdvisor 高評価",
+   "note": "英語対応。外国人客の痕跡が最も濃い"
+  },
+  {
+   "city": "京都",
+   "name": "空鍼癒院",
+   "area": "烏丸松原",
+   "kind": "按摩・指圧・鍼",
+   "ch": "LINE lin.ee/bQjYSga",
+   "rating": "",
+   "note": "「LINEからご予約・お問い合わせ」22時まで"
+  },
+  {
+   "city": "京都",
+   "name": "もみの気ハウス 京都店",
+   "area": "河原町 1分",
+   "kind": "アーユルヴェーダ・もみほぐし",
+   "ch": "LINE line.me/ti/p/WYzTNf1jfl / mominoki@jeans.ocn.ne.jp",
+   "rating": "HPB 4.74",
+   "note": "年中無休・22時まで"
+  },
+  {
+   "city": "京都",
+   "name": "プラムネイル",
+   "area": "四条烏丸",
+   "kind": "ネイル(1人)",
+   "ch": "LINE @159qjpdd / DM",
+   "rating": "",
+   "note": "「LINE返信もなるべく早く」— 人が返事すると明記"
+  },
+  {
+   "city": "京都",
+   "name": "チカノサロン 京都烏丸本店",
+   "area": "烏丸 1分",
+   "kind": "まつげパーマ・眉",
+   "ch": "LINE page.line.me/570toffw",
+   "rating": "",
+   "note": "TripAdvisor掲載"
+  },
+  {
+   "city": "京都",
+   "name": "TANDEN KYOTO",
+   "area": "京都駅",
+   "kind": "指圧(強め)・鍼",
+   "ch": "tandenkyoto@synergyjapa.co.jp / Square",
+   "rating": "",
+   "note": "英語で相談・施術"
+  },
   {
    "name": "安参",
    "area": "祇園・東山",
@@ -8,7 +161,9 @@
    "tel": "075-541-9666",
    "booking": "phone",
    "rating": "食べログ 4.18",
-   "note": "2階座敷のみ予約可・3名以上。日祝休"
+   "note": "2階座敷のみ予約可・3名以上。日祝休",
+   "city": "京都",
+   "ch": "電話"
   },
   {
    "name": "千登利亭",
@@ -17,7 +172,9 @@
    "tel": "075-561-1907",
    "booking": "phone",
    "rating": "食べログ 3.60",
-   "note": "英語メニューあり。木曜休"
+   "note": "英語メニューあり。木曜休",
+   "city": "京都",
+   "ch": "電話"
   },
   {
    "name": "肉料理 荒川",
@@ -26,7 +183,9 @@
    "tel": "075-231-1050",
    "booking": "phone",
    "rating": "食べログ 3.78",
-   "note": "店内英語対応。水曜休"
+   "note": "店内英語対応。水曜休",
+   "city": "京都",
+   "ch": "電話"
   },
   {
    "name": "先斗町 ますだ",
@@ -35,7 +194,9 @@
    "tel": "075-221-6816",
    "booking": "phone",
    "rating": "食べログ 3.52",
-   "note": "現金のみ・日曜休・観光客に優しい"
+   "note": "現金のみ・日曜休・観光客に優しい",
+   "city": "京都",
+   "ch": "電話"
   },
   {
    "name": "割烹 やました",
@@ -44,7 +205,9 @@
    "tel": "075-256-4506",
    "booking": "ja_web",
    "rating": "食べログ 3.69",
-   "note": "一休リクエスト予約。月曜休"
+   "note": "一休リクエスト予約。月曜休",
+   "city": "京都",
+   "ch": "電話"
   },
   {
    "name": "料理屋まえかわ",
@@ -53,7 +216,9 @@
    "tel": "075-744-0808",
    "booking": "phone",
    "rating": "食べログ 3.79",
-   "note": "完全予約制。月曜休"
+   "note": "完全予約制。月曜休",
+   "city": "京都",
+   "ch": "電話"
   },
   {
    "name": "山本まんぼ",
@@ -62,7 +227,9 @@
    "tel": "075-341-8050",
    "booking": "phone",
    "rating": "食べログ 3.67",
-   "note": "平日のみ電話予約。外国人客7割。水曜休"
+   "note": "平日のみ電話予約。外国人客7割。水曜休",
+   "city": "京都",
+   "ch": "電話"
   },
   {
    "name": "こりょうり たか屋",
@@ -71,7 +238,9 @@
    "tel": "050-5593-9009",
    "booking": "phone",
    "rating": "食べログ 3.64",
-   "note": "9席。日曜休"
+   "note": "9席。日曜休",
+   "city": "京都",
+   "ch": "電話"
   },
   {
    "name": "藤むら",
@@ -80,7 +249,9 @@
    "tel": "075-341-1489",
    "booking": "phone",
    "rating": "食べログ 3.70",
-   "note": "現金のみ。水曜休"
+   "note": "現金のみ。水曜休",
+   "city": "京都",
+   "ch": "電話"
   },
   {
    "name": "嵐山 大善",
@@ -89,7 +260,9 @@
    "tel": "075-882-0018",
    "booking": "phone",
    "rating": "食べログ 3.59",
-   "note": "外国人専用コースは前日までに電話予約。木曜休"
+   "note": "外国人専用コースは前日までに電話予約。木曜休",
+   "city": "京都",
+   "ch": "電話"
   },
   {
    "name": "いのうえ",
@@ -98,7 +271,9 @@
    "tel": "075-882-2418",
    "booking": "phone",
    "rating": "食べログ 3.61",
-   "note": "日曜休"
+   "note": "日曜休",
+   "city": "京都",
+   "ch": "電話"
   },
   {
    "name": "ほぐしや 三条店",
@@ -107,7 +282,9 @@
    "tel": "075-241-4949",
    "booking": "ja_web",
    "rating": "HPB 4.94",
-   "note": "全室個室・少し強め。現金のみ。火曜休"
+   "note": "全室個室・少し強め。現金のみ。火曜休",
+   "city": "京都",
+   "ch": "電話"
   },
   {
    "name": "コリとり名人 癒庵",
@@ -116,7 +293,9 @@
    "tel": "075-211-0184",
    "booking": "ja_web",
    "rating": "HPB 4.66",
-   "note": "早朝・深夜は電話のみ"
+   "note": "早朝・深夜は電話のみ",
+   "city": "京都",
+   "ch": "電話"
   },
   {
    "name": "楽々リラクゼーション",
@@ -125,7 +304,9 @@
    "tel": "075-255-5221",
    "booking": "ja_web",
    "rating": "HPB 4.44",
-   "note": "強め対応(弱いとの口コミも)"
+   "note": "強め対応(弱いとの口コミも)",
+   "city": "京都",
+   "ch": "電話"
   },
   {
    "name": "CIEL 四条河原町店",
@@ -134,7 +315,9 @@
    "tel": "075-741-8631",
    "booking": "ja_web",
    "rating": "HPB 4.71",
-   "note": "10~20時"
+   "note": "10~20時",
+   "city": "京都",
+   "ch": "電話"
   },
   {
    "name": "La fith hair corona 河原町店",
@@ -143,7 +326,9 @@
    "tel": "075-212-5811",
    "booking": "ja_web",
    "rating": "HPB 4.63",
-   "note": "10~20時"
+   "note": "10~20時",
+   "city": "京都",
+   "ch": "電話"
   }
  ]
 }
