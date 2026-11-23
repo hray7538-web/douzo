@@ -100,7 +100,7 @@ footer a{color:inherit}
 <h2>What do you want to book?</h2>
 <textarea id="q" placeholder="e.g. Dinner for 2 on Friday around 7pm, near Kawaramachi. No pork. Budget about 5,000 yen each."></textarea>
 <div class="btns">
-<button class="p" id="m" type="button">Send by email</button>
+<button class="p" id="m" type="button">Send</button>
 <button class="s" id="c" type="button" data-done="Copied">Copy</button>
 </div>
 <p class="note">We'll reply with the confirmation. If the first place is full, we try the next.</p>
@@ -123,8 +123,20 @@ footer a{color:inherit}
 var t=document.getElementById('q'),m=document.getElementById('m'),c=document.getElementById('c');
 if(!t)return;
 function body(){return encodeURIComponent(t.value||'');}
+function mail(){location.href='mailto:hray7538@gmail.com?subject='+encodeURIComponent('Yoyoi — booking request')+'&body='+body();}
+// 한 칸에 쓴 말을 창구로 바로 보낸다. 닿지 않으면 메일로 넘긴다(말을 잃지 않는다).
 if(m)m.addEventListener('click',function(){
-  location.href='mailto:hray7538@gmail.com?subject='+encodeURIComponent('Yoyoi — booking request')+'&body='+body();});
+  if(!(t.value||'').trim()){t.focus();return;}
+  if(m.disabled)return;
+  m.disabled=true;
+  var x=new AbortController(),k=setTimeout(function(){x.abort()},12000);
+  fetch('https://ch.43-200-65-88.sslip.io/say',{method:'POST',signal:x.signal,headers:{'Content-Type':'text/plain'},
+    body:JSON.stringify({text:t.value,lang:(document.documentElement.lang||'en').toLowerCase(),page:location.pathname})})
+  .then(function(r){return r.ok?r.json():Promise.reject()})
+  .then(function(d){if(!d||!d.t)throw 0;
+    try{localStorage.setItem('yoyoi_t',d.t)}catch(e){}
+    location.href='/t/#'+d.t;})
+  .catch(function(){clearTimeout(k);m.disabled=false;mail();});});
 if(c)c.addEventListener('click',function(){
   var d=c.getAttribute('data-done')||'Copied';
   navigator.clipboard.writeText(t.value||'').then(function(){var o=c.textContent;c.textContent=d;setTimeout(function(){c.textContent=o},1600)});});

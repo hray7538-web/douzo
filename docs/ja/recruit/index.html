@@ -101,15 +101,27 @@ footer a{color:inherit}
 <p class="note">下のボタンからメールが開きます。履歴書は不要です。<br>「なぜ興味を持ったか」を、ひとことだけ書いてください。</p>
 <div class="btns"><a class="p" href="mailto:hray7538@gmail.com?subject=%E3%83%A8%E3%83%A8%E3%82%A4%20%E6%8E%A1%E7%94%A8%E5%BF%9C%E5%8B%9F">メールで応募する</a></div>
 </div>
-<script type="application/ld+json">{"@context":"https://schema.org/","@type":"JobPosting","title":"AIと一緒に働く人を探しています。","description":"<p>AIは正確です。でも、あたたかくない。 お客様が何を不安に思っているのか。お店が何に困っているのか。——それは、人が教えてあげないと分かりません。 技術は分からなくて大丈夫です。人が分かることが、技術です。</p>","datePosted":"2026-09-18","employmentType":"FULL_TIME","hiringOrganization":{"@type":"Organization","name":"ヨヨイ（Yoyoi）","sameAs":"https://yoyoi.jp"},"jobLocation":{"@type":"Place","address":{"@type":"PostalAddress","addressLocality":"名古屋市中区","addressRegion":"愛知県","addressCountry":"JP"}}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org/","@type":"JobPosting","title":"AIと一緒に働く人を探しています。","description":"<p>AIは正確です。でも、あたたかくない。 お客様が何を不安に思っているのか。お店が何に困っているのか。——それは、人が教えてあげないと分かりません。 技術は分からなくて大丈夫です。人が分かることが、技術です。</p>","datePosted":"2026-11-23","employmentType":"FULL_TIME","hiringOrganization":{"@type":"Organization","name":"ヨヨイ（Yoyoi）","sameAs":"https://yoyoi.jp"},"jobLocation":{"@type":"Place","address":{"@type":"PostalAddress","addressLocality":"名古屋市中区","addressRegion":"愛知県","addressCountry":"JP"}}}</script>
 </main>
 <footer><div class="wrap">ヨヨイ Yoyoi — 名古屋 · <a href="https://yoyoi.jp/ja/about/">会社について</a> · <a href="https://yoyoi.jp/ja/recruit/">採用</a> · <a href="https://yoyoi.jp/en/">English</a></div></footer>
 <script>(function(){
 var t=document.getElementById('q'),m=document.getElementById('m'),c=document.getElementById('c');
 if(!t)return;
 function body(){return encodeURIComponent(t.value||'');}
+function mail(){location.href='mailto:hray7538@gmail.com?subject='+encodeURIComponent('Yoyoi — booking request')+'&body='+body();}
+// 한 칸에 쓴 말을 창구로 바로 보낸다. 닿지 않으면 메일로 넘긴다(말을 잃지 않는다).
 if(m)m.addEventListener('click',function(){
-  location.href='mailto:hray7538@gmail.com?subject='+encodeURIComponent('Yoyoi — booking request')+'&body='+body();});
+  if(!(t.value||'').trim()){t.focus();return;}
+  if(m.disabled)return;
+  m.disabled=true;
+  var x=new AbortController(),k=setTimeout(function(){x.abort()},12000);
+  fetch('https://ch.43-200-65-88.sslip.io/say',{method:'POST',signal:x.signal,headers:{'Content-Type':'text/plain'},
+    body:JSON.stringify({text:t.value,lang:(document.documentElement.lang||'en').toLowerCase(),page:location.pathname})})
+  .then(function(r){return r.ok?r.json():Promise.reject()})
+  .then(function(d){if(!d||!d.t)throw 0;
+    try{localStorage.setItem('yoyoi_t',d.t)}catch(e){}
+    location.href='/t/#'+d.t;})
+  .catch(function(){clearTimeout(k);m.disabled=false;mail();});});
 if(c)c.addEventListener('click',function(){
   var d=c.getAttribute('data-done')||'Copied';
   navigator.clipboard.writeText(t.value||'').then(function(){var o=c.textContent;c.textContent=d;setTimeout(function(){c.textContent=o},1600)});});

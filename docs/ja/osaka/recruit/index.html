@@ -92,7 +92,7 @@ footer a{color:inherit}
 <h2 class="sec">お願いしたいこと</h2><ul class="why"><li>画面に<b>そのまま読む文</b>が出ます。お店にお電話して、読んでいただくだけです。</li><li>お店のお返事を、画面の<b>三つのボタン</b>（取れた・だめ・あとで）から選んでいただきます。</li><li>1日に<b>数件</b>です。夕方前が中心になります。</li></ul><h2 class="sec">こんな方に</h2><ul class="why"><li>日本語でお電話ができる方。それだけです。</li><li>パソコンは要りません。<b>スマートフォンが使えれば大丈夫</b>です。</li><li>外国語は<b>一切必要ありません</b>。お客様とのやり取りはこちらでいたします。</li></ul><h2 class="sec">条件</h2><ul class="why"><li>ご自宅から（在宅）。週3日ほど、1日1〜2時間。</li><li>お電話1件ごとのお支払いです。金額は決まり次第、このページに掲載します。</li><li>年齢は問いません。長くお勤めいただける方を探しています。</li></ul><h2 class="sec">なぜ人にお願いするのか</h2><ul class="why"><li>お店との最初のやり取りは、<b>人の声でなければ通らない</b>と考えています。</li><li>AIが調べて文を用意し、<b>人が話す</b>。その分担でやっています。</li></ul>
 <div class="box"><h2>ご興味があれば、こちらからお送りください。</h2>
 <textarea id="q" placeholder="例：お名前、お住まいの地域、お電話できる時間帯。"></textarea>
-<div class="btns"><button class="p" id="m" type="button">メールで送る</button>
+<div class="btns"><button class="p" id="m" type="button">送る</button>
 <button class="s" id="c" type="button" data-done="コピーしました">コピー</button></div>
 <p class="note">確定のご連絡をいたします。最初のお店が満席の場合は次をお探しします。</p></div>
 <a class="back" href="https://yoyoi.jp/ja/osaka/">← ヨヨイ</a>
@@ -102,8 +102,20 @@ footer a{color:inherit}
 var t=document.getElementById('q'),m=document.getElementById('m'),c=document.getElementById('c');
 if(!t)return;
 function body(){return encodeURIComponent(t.value||'');}
+function mail(){location.href='mailto:hray7538@gmail.com?subject='+encodeURIComponent('Yoyoi — booking request')+'&body='+body();}
+// 한 칸에 쓴 말을 창구로 바로 보낸다. 닿지 않으면 메일로 넘긴다(말을 잃지 않는다).
 if(m)m.addEventListener('click',function(){
-  location.href='mailto:hray7538@gmail.com?subject='+encodeURIComponent('Yoyoi — booking request')+'&body='+body();});
+  if(!(t.value||'').trim()){t.focus();return;}
+  if(m.disabled)return;
+  m.disabled=true;
+  var x=new AbortController(),k=setTimeout(function(){x.abort()},12000);
+  fetch('https://ch.43-200-65-88.sslip.io/say',{method:'POST',signal:x.signal,headers:{'Content-Type':'text/plain'},
+    body:JSON.stringify({text:t.value,lang:(document.documentElement.lang||'en').toLowerCase(),page:location.pathname})})
+  .then(function(r){return r.ok?r.json():Promise.reject()})
+  .then(function(d){if(!d||!d.t)throw 0;
+    try{localStorage.setItem('yoyoi_t',d.t)}catch(e){}
+    location.href='/t/#'+d.t;})
+  .catch(function(){clearTimeout(k);m.disabled=false;mail();});});
 if(c)c.addEventListener('click',function(){
   var d=c.getAttribute('data-done')||'Copied';
   navigator.clipboard.writeText(t.value||'').then(function(){var o=c.textContent;c.textContent=d;setTimeout(function(){c.textContent=o},1600)});});

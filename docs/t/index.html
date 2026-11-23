@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>ヨヨイ Yoyoi</title>
+<style>*{box-sizing:border-box}
+.chwrap{margin:.9rem 0 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chwrap span{color:var(--mut);font-size:.9rem;margin-right:.2rem}
+.chwrap .ch{display:inline-block;padding:9px 16px;border:1.5px solid var(--acc);color:var(--acc);
+ border-radius:999px;text-decoration:none;font-weight:700;font-size:.95rem}
+
+:root{--bg:#fbfaf8;--fg:#1a1917;--mut:#6b6862;--line:#e6e2db;--card:#fff;--acc:#b8442e;--accs:#f5ede9}
+:root:not([data-theme=light]){}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#141311;--fg:#f0ede8;--mut:#a29c93;--line:#2b2926;--card:#1c1a18;--acc:#e5714f;--accs:#2a1f1b}}
+:root[data-theme=dark]{--bg:#141311;--fg:#f0ede8;--mut:#a29c93;--line:#2b2926;--card:#1c1a18;--acc:#e5714f;--accs:#2a1f1b}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.7 -apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP","Noto Sans KR","Noto Sans Thai","Segoe UI",sans-serif}
+.wrap{max-width:44rem;margin:0 auto;padding:0 1.25rem}
+header{padding:1.1rem 0;border-bottom:1px solid var(--line)}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.logo{font-weight:700;font-size:1.15rem;letter-spacing:.02em;text-decoration:none;color:var(--fg)}
+.logo span{color:var(--acc)}
+.langs{display:flex;flex-wrap:wrap;gap:.1rem .55rem;font-size:.8rem}
+.langs a{color:var(--mut);text-decoration:none;white-space:nowrap}
+.langs a:hover,.langs a[aria-current]{color:var(--acc)}
+.why-hero{margin:2.4rem 0 .4rem;padding:1.1rem 0 1.2rem;border-top:2px solid var(--acc);border-bottom:1px solid var(--line)}
+.why-hero b{display:block;font-size:clamp(1.3rem,4.5vw,1.75rem);line-height:1.35;letter-spacing:-.01em;margin-bottom:.5rem}
+.why-hero span{color:var(--mut);font-size:.98rem;line-height:1.75}
+h1{font-size:clamp(1.9rem,7vw,3rem);line-height:1.22;margin:2.6rem 0 1rem;letter-spacing:-.01em}
+.sub{font-size:1.06rem;color:var(--mut);margin:0 0 1.6rem;max-width:32rem}
+.chips{display:flex;flex-wrap:wrap;gap:.45rem;margin:0 0 2.4rem;padding:0;list-style:none}
+.chips li{font-size:.82rem;padding:.3rem .7rem;border:1px solid var(--line);border-radius:2rem;color:var(--mut);background:var(--card)}
+.box{background:var(--card);border:1px solid var(--line);border-radius:.9rem;padding:1.25rem;margin:0 0 2.6rem}
+.box h2{font-size:1.02rem;margin:0 0 .7rem}
+textarea{width:100%;min-height:7.5rem;padding:.8rem;border:1px solid var(--line);border-radius:.55rem;background:var(--bg);color:var(--fg);font:inherit;font-size:.97rem;resize:vertical}
+textarea:focus{outline:2px solid var(--acc);outline-offset:1px}
+.btns{display:flex;flex-wrap:wrap;gap:.55rem;margin-top:.8rem}
+button{font:inherit;font-size:.95rem;padding:.62rem 1.15rem;border-radius:.5rem;border:1px solid var(--acc);cursor:pointer}
+.p{background:var(--acc);color:#fff}
+.s{background:transparent;color:var(--acc)}
+.note{font-size:.83rem;color:var(--mut);margin:.75rem 0 0}
+h2.sec{font-size:1.24rem;margin:2.8rem 0 1.1rem}
+ol.steps{list-style:none;counter-reset:s;padding:0;margin:0 0 2.6rem}
+ol.steps li{counter-increment:s;position:relative;padding-left:2.6rem;margin-bottom:1.15rem}
+ol.steps li::before{content:counter(s);position:absolute;left:0;top:.05rem;width:1.75rem;height:1.75rem;border-radius:50%;background:var(--accs);color:var(--acc);display:grid;place-items:center;font-size:.85rem;font-weight:700}
+ol.steps b{display:block}
+ol.steps span{color:var(--mut);font-size:.94rem}
+ul.why{padding-left:1.1rem;margin:0 0 2.6rem;color:var(--mut)}
+ul.why li{margin-bottom:.6rem}
+ul.why b{color:var(--fg)}
+.cats{display:grid;gap:.6rem;grid-template-columns:1fr;margin:0 0 2.8rem;padding:0;list-style:none}
+@media(min-width:34rem){.cats{grid-template-columns:1fr 1fr}}
+.cats a{display:block;padding:.85rem 1rem;border:1px solid var(--line);border-radius:.6rem;background:var(--card);text-decoration:none;color:var(--fg);font-size:.94rem}
+.cats a:hover{border-color:var(--acc)}
+.cats small{display:block;color:var(--mut);font-size:.83rem;margin-top:.15rem}
+footer{border-top:1px solid var(--line);margin-top:1rem;padding:1.6rem 0 3rem;color:var(--mut);font-size:.85rem}
+footer a{color:var(--mut)}
+.back{display:inline-block;margin:2rem 0 0;color:var(--acc);text-decoration:none;font-size:.9rem}
+
+.prose p{margin:0 0 1rem;line-height:1.85}
+.why-big{margin:2.4rem 0;padding:1.6rem 0;border-top:3px solid var(--acc);border-bottom:1px solid #e5e0da}
+.why-big b{display:block;font-size:1.9rem;line-height:1.3;letter-spacing:-.01em}
+.why-big span{display:block;margin-top:.7rem;color:var(--mut);line-height:1.8}
+h1.lead{font-size:2.3rem;line-height:1.25}
+ul.dl{list-style:none;padding:0;margin:0 0 1.6rem}
+ul.dl li{padding:.7rem 0 .7rem 1.1rem;border-bottom:1px solid #eceae6;position:relative}
+ul.dl li:before{content:"";position:absolute;left:0;top:1.25rem;width:5px;height:5px;border-radius:50%;background:var(--acc)}
+a.cta{display:inline-block;padding:.85rem 1.5rem;background:var(--acc);color:#fff;border-radius:999px;text-decoration:none;font-weight:600}
+a.cta:hover{opacity:.88}
+footer a{color:inherit}
+
+.talk{margin:2rem 0 0}
+.talk h1{font-size:1.5rem;margin:0 0 .5rem}
+.talk .keep{color:var(--mut);font-size:.92rem;margin:0 0 1.4rem}
+.msg{padding:.75rem .95rem;margin:0 0 .65rem;border-radius:.9rem;border:1px solid var(--line);background:var(--card);white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.guest{margin-left:1.6rem}
+.msg.us{margin-right:1.6rem;background:var(--accs);border-color:transparent}
+.msg small{display:block;color:var(--mut);font-size:.74rem;margin-bottom:.15rem}
+.got{color:var(--mut);font-size:.9rem;margin:.2rem 0 1.4rem;padding-left:.2rem}
+.err{color:var(--acc);font-size:.9rem;margin:.6rem 0 0}
+button:disabled{opacity:.55;cursor:default}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="hrow">
+<a class="logo" href="/">ヨヨイ<span>.</span></a>
+</div></div></header>
+<main class="wrap"><div class="talk">
+<h1 id="h"></h1>
+<p class="keep" id="keep"></p>
+<div id="msgs"></div>
+<p class="got" id="got" style="display:none"></p>
+<div class="box" id="form" style="display:none">
+<textarea id="q"></textarea>
+<div class="btns">
+<button class="p" id="m" type="button"></button>
+<button class="s" id="c" type="button"></button>
+</div>
+<p class="err" id="err"></p>
+<p class="note" id="contact"></p>
+</div>
+<a class="back" id="home" href="/"></a>
+</div></main>
+<script>(function(){
+var T={"en": {"h": "Your reply will appear here.", "keep": "Keep this page. You can come back to it any time, and write more here.", "got": "We have your message and are reading it. You will hear from us within a day.", "contact": "If you want us to reach you somewhere else too (email, LINE, WhatsApp…), just write it here.", "ph": "Write more here", "send": "Send", "copy": "Copy this address", "copied": "Copied", "me": "You", "none": "We could not find this conversation.", "fail": "Could not send. Please press Send again.", "home": "Start a new request"}, "ja": {"h": "お返事はここに届きます。", "keep": "このページを残しておいてください。いつでも戻れて、続きをここに書けます。", "got": "受け取りました。いま読んでいます。1日以内にお返事します。", "contact": "ほかの連絡先（メール、LINE など）にも知らせてほしい場合は、それもここに書いてください。", "ph": "続きをここに書いてください", "send": "送る", "copy": "このアドレスをコピー", "copied": "コピーしました", "me": "あなた", "none": "この会話が見つかりませんでした。", "fail": "送れませんでした。もう一度「送る」を押してください。", "home": "新しく依頼する"}, "ko": {"h": "답은 여기로 옵니다.", "keep": "이 페이지를 간직해 주세요. 언제든 돌아올 수 있고, 여기에 이어서 쓰시면 됩니다.", "got": "받았습니다. 지금 읽고 있습니다. 하루 안에 답드립니다.", "contact": "다른 곳(메일, LINE, 카카오톡 등)으로도 알려드리길 원하시면 그것도 여기에 그냥 적어 주세요.", "ph": "이어서 쓰세요", "send": "보내기", "copy": "이 주소 복사", "copied": "복사했습니다", "me": "나", "none": "이 대화를 찾지 못했습니다.", "fail": "보내지 못했습니다. 보내기를 다시 눌러 주세요.", "home": "새로 부탁하기"}, "zh-hant": {"h": "回覆會出現在這裡。", "keep": "請保留這個頁面。您隨時可以回來，並在這裡繼續寫。", "got": "已收到，我們正在閱讀。一天內回覆您。", "contact": "如果希望我們也透過其他方式（電子郵件、LINE 等）通知您，直接寫在這裡就可以。", "ph": "請在這裡繼續寫", "send": "送出", "copy": "複製這個網址", "copied": "已複製", "me": "您", "none": "找不到這段對話。", "fail": "沒有送出。請再按一次「送出」。", "home": "提出新的請求"}, "zh-hans": {"h": "回复会出现在这里。", "keep": "请保留这个页面。您随时可以回来，并在这里继续写。", "got": "已收到，我们正在阅读。一天内回复您。", "contact": "如果希望我们也通过其他方式（邮箱、微信、LINE 等）通知您，直接写在这里就可以。", "ph": "请在这里继续写", "send": "发送", "copy": "复制这个网址", "copied": "已复制", "me": "您", "none": "找不到这段对话。", "fail": "没有发送成功。请再按一次“发送”。", "home": "提出新的请求"}, "th": {"h": "คำตอบจะมาที่หน้านี้", "keep": "กรุณาเก็บหน้านี้ไว้ คุณกลับมาได้ทุกเมื่อ และเขียนต่อที่นี่ได้เลย", "got": "เราได้รับข้อความแล้วและกำลังอ่านอยู่ จะตอบกลับภายในหนึ่งวัน", "contact": "หากต้องการให้เราแจ้งทางช่องทางอื่นด้วย (อีเมล, LINE ฯลฯ) เขียนไว้ที่นี่ได้เลย", "ph": "เขียนต่อที่นี่", "send": "ส่ง", "copy": "คัดลอกที่อยู่หน้านี้", "copied": "คัดลอกแล้ว", "me": "คุณ", "none": "ไม่พบการสนทนานี้", "fail": "ส่งไม่สำเร็จ กรุณากด “ส่ง” อีกครั้ง", "home": "เริ่มคำขอใหม่"}},CH='https://ch.43-200-65-88.sslip.io',$=function(i){return document.getElementById(i)};
+var id=(location.hash||'').slice(1);
+if(!id){try{id=localStorage.getItem('yoyoi_t')||''}catch(e){}; if(id)history.replaceState(null,'','#'+id);}
+var lang=(navigator.language||'en').toLowerCase(),L=T.en,n=-1;
+function pick(l){l=(l||'').toLowerCase();
+  if(T[l])return l; if(l.indexOf('zh')==0)return /tw|hk|mo|hant/.test(l)?'zh-hant':'zh-hans';
+  l=l.slice(0,2);return T[l]?l:'en';}
+function words(l){lang=pick(l);L=T[lang];document.documentElement.lang=lang;
+  $('h').textContent=L.h;$('keep').textContent=L.keep;$('q').placeholder=L.ph;$('m').textContent=L.send;
+  $('c').textContent=L.copy;$('c').setAttribute('data-done',L.copied);$('contact').textContent=L.contact;
+  $('home').textContent=L.home;$('home').href='/'+lang+'/';}
+function when(a){try{return new Date(a).toLocaleString(lang,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}catch(e){return ''}}
+function draw(d){
+  if(d.msgs.length==n)return; n=d.msgs.length;
+  var box=$('msgs');box.textContent='';
+  d.msgs.forEach(function(x){var e=document.createElement('div');e.className='msg '+(x.who=='us'?'us':'guest');
+    var s=document.createElement('small');s.textContent=(x.who=='us'?'ヨヨイ':L.me)+' · '+when(x.at);
+    e.appendChild(s);e.appendChild(document.createTextNode(x.text));box.appendChild(e);});
+  var last=d.msgs[d.msgs.length-1];
+  $('got').textContent=(last&&last.who=='guest')?L.got:'';
+  $('got').style.display=(last&&last.who=='guest')?'':'none';}
+function lost(){$('h').textContent=L.none;$('keep').textContent='';$('form').style.display='none';}
+function load(first){
+  if(!id){words(lang);lost();return;}
+  fetch(CH+'/t/'+encodeURIComponent(id)).then(function(r){
+    if(r.status==404){if(first){words(lang);lost();} return null;} return r.ok?r.json():null;})
+  .then(function(d){if(!d)return; if(first)words(d.lang); $('form').style.display='';draw(d);})
+  .catch(function(){if(first)words(lang);});}
+words(lang);load(true);
+setInterval(function(){if(!document.hidden)load(false)},20000);
+document.addEventListener('visibilitychange',function(){if(!document.hidden)load(false)});
+$('m').addEventListener('click',function(){
+  var t=$('q'),m=$('m');if(!(t.value||'').trim()){t.focus();return;} if(m.disabled)return;
+  m.disabled=true;$('err').textContent='';
+  fetch(CH+'/say',{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({text:t.value,t:id})})
+  .then(function(r){return r.ok?r.json():Promise.reject()})
+  .then(function(){t.value='';m.disabled=false;load(false);})
+  .catch(function(){m.disabled=false;$('err').textContent=L.fail;});});
+$('c').addEventListener('click',function(){var c=$('c'),o=c.textContent;
+  navigator.clipboard.writeText(location.href).then(function(){c.textContent=c.getAttribute('data-done');setTimeout(function(){c.textContent=o},1600)});});
+})();</script>
+</body>
+</html>

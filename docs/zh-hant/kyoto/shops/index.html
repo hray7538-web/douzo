@@ -104,7 +104,7 @@ footer a{color:inherit}
 <ul class="why"><li>我們評估店家，也評估客人。不會只保護單邊。</li><li>不以國籍、種族、信仰篩選客人。我們只看行為。</li><li>絕不把客人的個人資料交給店家。</li></ul>
 <div class="box"><h2>有任何問題或想商量的，請從這裡寄給我們。</h2>
 <textarea id="q" placeholder="例如：您偏好的預約方式、可以配合的時段、希望婉拒的條件等。"></textarea>
-<div class="btns"><button class="p" id="m" type="button">用電子郵件寄出</button>
+<div class="btns"><button class="p" id="m" type="button">送出</button>
 <button class="s" id="c" type="button" data-done="已複製">複製</button></div>
 <p class="note">確認後會通知您。如果第一家滿了，我們會找下一家。</p></div>
 <a class="back" href="https://yoyoi.jp/zh-hant/kyoto/">← ヨヨイ</a>
@@ -114,8 +114,20 @@ footer a{color:inherit}
 var t=document.getElementById('q'),m=document.getElementById('m'),c=document.getElementById('c');
 if(!t)return;
 function body(){return encodeURIComponent(t.value||'');}
+function mail(){location.href='mailto:hray7538@gmail.com?subject='+encodeURIComponent('Yoyoi — booking request')+'&body='+body();}
+// 한 칸에 쓴 말을 창구로 바로 보낸다. 닿지 않으면 메일로 넘긴다(말을 잃지 않는다).
 if(m)m.addEventListener('click',function(){
-  location.href='mailto:hray7538@gmail.com?subject='+encodeURIComponent('Yoyoi — booking request')+'&body='+body();});
+  if(!(t.value||'').trim()){t.focus();return;}
+  if(m.disabled)return;
+  m.disabled=true;
+  var x=new AbortController(),k=setTimeout(function(){x.abort()},12000);
+  fetch('https://ch.43-200-65-88.sslip.io/say',{method:'POST',signal:x.signal,headers:{'Content-Type':'text/plain'},
+    body:JSON.stringify({text:t.value,lang:(document.documentElement.lang||'en').toLowerCase(),page:location.pathname})})
+  .then(function(r){return r.ok?r.json():Promise.reject()})
+  .then(function(d){if(!d||!d.t)throw 0;
+    try{localStorage.setItem('yoyoi_t',d.t)}catch(e){}
+    location.href='/t/#'+d.t;})
+  .catch(function(){clearTimeout(k);m.disabled=false;mail();});});
 if(c)c.addEventListener('click',function(){
   var d=c.getAttribute('data-done')||'Copied';
   navigator.clipboard.writeText(t.value||'').then(function(){var o=c.textContent;c.textContent=d;setTimeout(function(){c.textContent=o},1600)});});

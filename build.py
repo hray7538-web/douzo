@@ -5,10 +5,16 @@
 """
 import os, json, shutil, html, datetime, urllib.parse
 
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs")
+OUT = os.environ.get("YOYOI_OUT") or os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs")   # YOYOI_OUT = 시험할 때만 다른 곳에 짓는다
 SITE = "https://yoyoi.jp"
 TODAY = datetime.date.today().isoformat()
 CONTACT = "hray7538@gmail.com"   # ← 접수받을 주소. 이 한 줄만 바꾸면 됩니다.
+
+# 말 받는 창구(ch/문.py · 마을). 한 칸에 쓴 말이 메일 앱을 거치지 않고 여기로 바로 간다.
+#   창구가 안 열려 있으면 「보내기」는 예전처럼 메일로 넘어간다 — 말을 잃지 않는다.
+#   ch.yoyoi.jp A 레코드가 생기면 이 한 줄만 그 이름으로 바꾼다. 시험할 때는 YOYOI_CH 로 바꿔 짓는다.
+CH = os.environ.get("YOYOI_CH") or "https://ch.43-200-65-88.sslip.io"
+SEND = {"en":"Send", "ja":"送る", "ko":"보내기", "zh-hant":"送出", "zh-hans":"发送", "th":"ส่ง"}
 
 # 대화 창구. 계정을 만들면 여기만 채우면 사이트 전체(모든 언어·모든 페이지)에 버튼이 생깁니다.
 #   line      : https://line.me/R/ti/p/@xxxxxxx
@@ -259,12 +265,24 @@ JS = """(function(){
 var t=document.getElementById('q'),m=document.getElementById('m'),c=document.getElementById('c');
 if(!t)return;
 function body(){return encodeURIComponent(t.value||'');}
+function mail(){location.href='mailto:@CONTACT@?subject='+encodeURIComponent('Yoyoi — booking request')+'&body='+body();}
+// 한 칸에 쓴 말을 창구로 바로 보낸다. 닿지 않으면 메일로 넘긴다(말을 잃지 않는다).
 if(m)m.addEventListener('click',function(){
-  location.href='mailto:%s?subject='+encodeURIComponent('Yoyoi — booking request')+'&body='+body();});
+  if(!(t.value||'').trim()){t.focus();return;}
+  if(m.disabled)return;
+  m.disabled=true;
+  var x=new AbortController(),k=setTimeout(function(){x.abort()},12000);
+  fetch('@CH@/say',{method:'POST',signal:x.signal,headers:{'Content-Type':'text/plain'},
+    body:JSON.stringify({text:t.value,lang:(document.documentElement.lang||'en').toLowerCase(),page:location.pathname})})
+  .then(function(r){return r.ok?r.json():Promise.reject()})
+  .then(function(d){if(!d||!d.t)throw 0;
+    try{localStorage.setItem('yoyoi_t',d.t)}catch(e){}
+    location.href='/t/#'+d.t;})
+  .catch(function(){clearTimeout(k);m.disabled=false;mail();});});
 if(c)c.addEventListener('click',function(){
   var d=c.getAttribute('data-done')||'Copied';
   navigator.clipboard.writeText(t.value||'').then(function(){var o=c.textContent;c.textContent=d;setTimeout(function(){c.textContent=o},1600)});});
-})();""" % CONTACT
+})();""".replace("@CONTACT@", CONTACT).replace("@CH@", CH)
 
 CSS += """
 .prose p{margin:0 0 1rem;line-height:1.85}
@@ -600,7 +618,7 @@ def formbox(v, lang=None):
 <h2>{v['form_h']}</h2>
 <textarea id="q" placeholder="{html.escape(v['form_ph'])}"></textarea>
 <div class="btns">
-<button class="p" id="m" type="button">{v['btn_mail']}</button>
+<button class="p" id="m" type="button">{SEND[v['dir']]}</button>
 <button class="s" id="c" type="button" data-done="{v['copied']}">{v['btn_copy']}</button>
 </div>
 <p class="note">{v['note']}</p>
@@ -794,7 +812,7 @@ def shoppage(lang):
 <h2>{html.escape(c['cta'])}</h2>
 <textarea id="q" placeholder="{html.escape(c['ph'])}"></textarea>
 <div class="btns">
-<button class="p" id="m" type="button">{v['btn_mail']}</button>
+<button class="p" id="m" type="button">{SEND[v['dir']]}</button>
 <button class="s" id="c" type="button" data-done="{v['copied']}">{v['btn_copy']}</button>
 </div>
 </div>
@@ -1288,7 +1306,7 @@ def c_shop(lang, C):
 <ul class="why">{ul(c['fair'])}</ul>
 <div class="box"><h2>{html.escape(c['cta'])}</h2>
 <textarea id="q" placeholder="{html.escape(c['ph'])}"></textarea>
-<div class="btns"><button class="p" id="m" type="button">{v['btn_mail']}</button>
+<div class="btns"><button class="p" id="m" type="button">{SEND[v['dir']]}</button>
 <button class="s" id="c" type="button" data-done="{v['copied']}">{v['btn_copy']}</button></div>
 <p class="note">{v['note']}</p></div>
 <a class="back" href="{SITE}/{d}/{k}/">← ヨヨイ</a>"""
@@ -1354,7 +1372,7 @@ def c_recruit(lang, C):
 {secs}
 <div class="box"><h2>{html.escape(r['cta'])}</h2>
 <textarea id="q" placeholder="{html.escape(r['ph'])}"></textarea>
-<div class="btns"><button class="p" id="m" type="button">{v['btn_mail']}</button>
+<div class="btns"><button class="p" id="m" type="button">{SEND[v['dir']]}</button>
 <button class="s" id="c" type="button" data-done="{v['copied']}">{v['btn_copy']}</button></div>
 <p class="note">{v['note']}</p></div>
 <a class="back" href="{SITE}/{d}/{k}/">← ヨヨイ</a>"""
@@ -1378,6 +1396,133 @@ for C in CITIES:
             wr(os.path.join(base,"shops","index.html"), c_shop(lang,C)); urls.append(u+"shops/")
         if lang in KYREC:
             wr(os.path.join(base,"recruit","index.html"), c_recruit(lang,C)); urls.append(u+"recruit/")
+
+# ══════════════════════════════════════════════════════════
+#  대화 — yoyoi.jp/t/#<대화표>
+#  한 칸에 쓴 말이 창구에 닿으면 손님은 여기로 온다. 답이 여기에 오고, 여기서 이어 쓴다.
+#  대화표는 # 뒤에 있어 깃허브에 넘어가지 않는다. 대화표가 곧 열쇠다(로그인 없음).
+#  검색에는 안 나온다(noindex · sitemap 에 넣지 않는다).
+# ══════════════════════════════════════════════════════════
+TALK_T = {
+ "en": dict(h="Your reply will appear here.", keep="Keep this page. You can come back to it any time, and write more here.",
+   got="We have your message and are reading it. You will hear from us within a day.",
+   contact="If you want us to reach you somewhere else too (email, LINE, WhatsApp…), just write it here.",
+   ph="Write more here", send="Send", copy="Copy this address", copied="Copied", me="You",
+   none="We could not find this conversation.", fail="Could not send. Please press Send again.", home="Start a new request"),
+ "ja": dict(h="お返事はここに届きます。", keep="このページを残しておいてください。いつでも戻れて、続きをここに書けます。",
+   got="受け取りました。いま読んでいます。1日以内にお返事します。",
+   contact="ほかの連絡先（メール、LINE など）にも知らせてほしい場合は、それもここに書いてください。",
+   ph="続きをここに書いてください", send="送る", copy="このアドレスをコピー", copied="コピーしました", me="あなた",
+   none="この会話が見つかりませんでした。", fail="送れませんでした。もう一度「送る」を押してください。", home="新しく依頼する"),
+ "ko": dict(h="답은 여기로 옵니다.", keep="이 페이지를 간직해 주세요. 언제든 돌아올 수 있고, 여기에 이어서 쓰시면 됩니다.",
+   got="받았습니다. 지금 읽고 있습니다. 하루 안에 답드립니다.",
+   contact="다른 곳(메일, LINE, 카카오톡 등)으로도 알려드리길 원하시면 그것도 여기에 그냥 적어 주세요.",
+   ph="이어서 쓰세요", send="보내기", copy="이 주소 복사", copied="복사했습니다", me="나",
+   none="이 대화를 찾지 못했습니다.", fail="보내지 못했습니다. 보내기를 다시 눌러 주세요.", home="새로 부탁하기"),
+ "zh-hant": dict(h="回覆會出現在這裡。", keep="請保留這個頁面。您隨時可以回來，並在這裡繼續寫。",
+   got="已收到，我們正在閱讀。一天內回覆您。",
+   contact="如果希望我們也透過其他方式（電子郵件、LINE 等）通知您，直接寫在這裡就可以。",
+   ph="請在這裡繼續寫", send="送出", copy="複製這個網址", copied="已複製", me="您",
+   none="找不到這段對話。", fail="沒有送出。請再按一次「送出」。", home="提出新的請求"),
+ "zh-hans": dict(h="回复会出现在这里。", keep="请保留这个页面。您随时可以回来，并在这里继续写。",
+   got="已收到，我们正在阅读。一天内回复您。",
+   contact="如果希望我们也通过其他方式（邮箱、微信、LINE 等）通知您，直接写在这里就可以。",
+   ph="请在这里继续写", send="发送", copy="复制这个网址", copied="已复制", me="您",
+   none="找不到这段对话。", fail="没有发送成功。请再按一次“发送”。", home="提出新的请求"),
+ "th": dict(h="คำตอบจะมาที่หน้านี้", keep="กรุณาเก็บหน้านี้ไว้ คุณกลับมาได้ทุกเมื่อ และเขียนต่อที่นี่ได้เลย",
+   got="เราได้รับข้อความแล้วและกำลังอ่านอยู่ จะตอบกลับภายในหนึ่งวัน",
+   contact="หากต้องการให้เราแจ้งทางช่องทางอื่นด้วย (อีเมล, LINE ฯลฯ) เขียนไว้ที่นี่ได้เลย",
+   ph="เขียนต่อที่นี่", send="ส่ง", copy="คัดลอกที่อยู่หน้านี้", copied="คัดลอกแล้ว", me="คุณ",
+   none="ไม่พบการสนทนานี้", fail="ส่งไม่สำเร็จ กรุณากด “ส่ง” อีกครั้ง", home="เริ่มคำขอใหม่"),
+}
+TALK_CSS = """
+.talk{margin:2rem 0 0}
+.talk h1{font-size:1.5rem;margin:0 0 .5rem}
+.talk .keep{color:var(--mut);font-size:.92rem;margin:0 0 1.4rem}
+.msg{padding:.75rem .95rem;margin:0 0 .65rem;border-radius:.9rem;border:1px solid var(--line);background:var(--card);white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.guest{margin-left:1.6rem}
+.msg.us{margin-right:1.6rem;background:var(--accs);border-color:transparent}
+.msg small{display:block;color:var(--mut);font-size:.74rem;margin-bottom:.15rem}
+.got{color:var(--mut);font-size:.9rem;margin:.2rem 0 1.4rem;padding-left:.2rem}
+.err{color:var(--acc);font-size:.9rem;margin:.6rem 0 0}
+button:disabled{opacity:.55;cursor:default}
+"""
+TALK_JS = """(function(){
+var T=@T@,CH='@CH@',$=function(i){return document.getElementById(i)};
+var id=(location.hash||'').slice(1);
+if(!id){try{id=localStorage.getItem('yoyoi_t')||''}catch(e){}; if(id)history.replaceState(null,'','#'+id);}
+var lang=(navigator.language||'en').toLowerCase(),L=T.en,n=-1;
+function pick(l){l=(l||'').toLowerCase();
+  if(T[l])return l; if(l.indexOf('zh')==0)return /tw|hk|mo|hant/.test(l)?'zh-hant':'zh-hans';
+  l=l.slice(0,2);return T[l]?l:'en';}
+function words(l){lang=pick(l);L=T[lang];document.documentElement.lang=lang;
+  $('h').textContent=L.h;$('keep').textContent=L.keep;$('q').placeholder=L.ph;$('m').textContent=L.send;
+  $('c').textContent=L.copy;$('c').setAttribute('data-done',L.copied);$('contact').textContent=L.contact;
+  $('home').textContent=L.home;$('home').href='/'+lang+'/';}
+function when(a){try{return new Date(a).toLocaleString(lang,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}catch(e){return ''}}
+function draw(d){
+  if(d.msgs.length==n)return; n=d.msgs.length;
+  var box=$('msgs');box.textContent='';
+  d.msgs.forEach(function(x){var e=document.createElement('div');e.className='msg '+(x.who=='us'?'us':'guest');
+    var s=document.createElement('small');s.textContent=(x.who=='us'?'ヨヨイ':L.me)+' · '+when(x.at);
+    e.appendChild(s);e.appendChild(document.createTextNode(x.text));box.appendChild(e);});
+  var last=d.msgs[d.msgs.length-1];
+  $('got').textContent=(last&&last.who=='guest')?L.got:'';
+  $('got').style.display=(last&&last.who=='guest')?'':'none';}
+function lost(){$('h').textContent=L.none;$('keep').textContent='';$('form').style.display='none';}
+function load(first){
+  if(!id){words(lang);lost();return;}
+  fetch(CH+'/t/'+encodeURIComponent(id)).then(function(r){
+    if(r.status==404){if(first){words(lang);lost();} return null;} return r.ok?r.json():null;})
+  .then(function(d){if(!d)return; if(first)words(d.lang); $('form').style.display='';draw(d);})
+  .catch(function(){if(first)words(lang);});}
+words(lang);load(true);
+setInterval(function(){if(!document.hidden)load(false)},20000);
+document.addEventListener('visibilitychange',function(){if(!document.hidden)load(false)});
+$('m').addEventListener('click',function(){
+  var t=$('q'),m=$('m');if(!(t.value||'').trim()){t.focus();return;} if(m.disabled)return;
+  m.disabled=true;$('err').textContent='';
+  fetch(CH+'/say',{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({text:t.value,t:id})})
+  .then(function(r){return r.ok?r.json():Promise.reject()})
+  .then(function(){t.value='';m.disabled=false;load(false);})
+  .catch(function(){m.disabled=false;$('err').textContent=L.fail;});});
+$('c').addEventListener('click',function(){var c=$('c'),o=c.textContent;
+  navigator.clipboard.writeText(location.href).then(function(){c.textContent=c.getAttribute('data-done');setTimeout(function(){c.textContent=o},1600)});});
+})();""".replace("@T@", json.dumps(TALK_T, ensure_ascii=False)).replace("@CH@", CH)
+wr(os.path.join(OUT,"t","index.html"), f"""<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>ヨヨイ Yoyoi</title>
+<style>{CSS}{TALK_CSS}</style>
+</head>
+<body>
+<header><div class="wrap"><div class="hrow">
+<a class="logo" href="/">ヨヨイ<span>.</span></a>
+</div></div></header>
+<main class="wrap"><div class="talk">
+<h1 id="h"></h1>
+<p class="keep" id="keep"></p>
+<div id="msgs"></div>
+<p class="got" id="got" style="display:none"></p>
+<div class="box" id="form" style="display:none">
+<textarea id="q"></textarea>
+<div class="btns">
+<button class="p" id="m" type="button"></button>
+<button class="s" id="c" type="button"></button>
+</div>
+<p class="err" id="err"></p>
+<p class="note" id="contact"></p>
+</div>
+<a class="back" id="home" href="/"></a>
+</div></main>
+<script>{TALK_JS}</script>
+</body>
+</html>
+""")
 
 open(os.path.join(OUT,"sitemap.xml"),"w",encoding="utf-8").write(
  '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
