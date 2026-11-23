@@ -7,6 +7,9 @@
 #   v1 원칙 그대로: 자동으로 답하지 않는다. 받고, 쌓고, 보여 준다. 답은 사람(미치)이 쓴다.
 #   글은 고치거나 줄이지 않는다. 한 줄 = 한 마디. 손님 주소(IP)는 적지 않는다.
 #   자료는 이 저장소(공개) 밖에 둔다: 기본 ~/창구-자료 · 바꾸려면 YOYOI_CH_DATA
+#   알림: <자료>/알림 이 있으면 손님 말이 올 때 텔레그램으로 「왔습니다」 한 줄을 보낸다. 손님 글은 보내지 않는다.
+#         알림을 거는 법 = 마을에서 python3 ~/douzo/ch/문.py 알림 (봇 토큰은 원장님이 직접 넣는다. 저장소에 두지 않는다)
+#         알림 끄기 = <자료>/알림 을 지운다. 서버를 다시 켤 필요 없다.
 #   끄기 = 크론의 창구 지킴이 줄을 빼고 pkill -f ch/문.py
 import collections
 import datetime
@@ -19,6 +22,7 @@ import sys
 import threading
 import time
 import urllib.parse
+import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 PORT = int(os.environ.get("YOYOI_CH_PORT", "7980"))
@@ -56,6 +60,69 @@ def now():
 def log(line):
     with open(LOG, "a", encoding="utf-8") as f:
         f.write("%s %s\n" % (now(), line))
+
+
+NOTE = os.path.join(DATA, "알림")     # {"token": 봇 토큰, "chat": 받을 방} · 없으면 알리지 않는다
+PUBLIC = os.environ.get("YOYOI_CH_PUBLIC", "https://ch.43-200-65-88.sslip.io")   # 알림에 적을 안쪽 화면 주소
+QUIET = 300                           # 같은 대화는 5분에 한 번만 알린다
+TOLD = {}
+
+
+def tg(token, method, **kw):
+    """텔레그램 봇에 한 번 묻는다."""
+    req = urllib.request.Request("https://api.telegram.org/bot%s/%s" % (token, method),
+                                 data=urllib.parse.urlencode(kw).encode())
+    with urllib.request.urlopen(req, timeout=10) as r:
+        return json.loads(r.read().decode("utf-8"))
+
+
+def notify(tid, lang, pg, first):
+    """손님 말이 왔다고 알린다. 손님 글은 싣지 않고, 읽을 곳만 알린다. 알림이 안 가도 받기는 멈추지 않는다."""
+    try:
+        with open(NOTE, encoding="utf-8") as f:
+            cfg = json.load(f)
+        token, chat = cfg["token"], cfg["chat"]
+    except Exception:
+        return
+    t = time.time()
+    with LOCK:
+        if t - TOLD.get(tid, 0) < QUIET:
+            return
+        TOLD[tid] = t
+        if len(TOLD) > 2000:
+            for k in [k for k, v in TOLD.items() if t - v > QUIET]:
+                del TOLD[k]
+    text = "ヨヨイ 창구 — %s\n%s · %s\n%s/%s/t/%s" % (
+        "새 말이 왔습니다" if first else "손님이 이어 썼습니다", lang, pg or "-", PUBLIC, urllib.parse.quote(KEY), tid)
+
+    def go():
+        try:
+            tg(token, "sendMessage", chat_id=chat, text=text, disable_web_page_preview="true")
+        except Exception as e:
+            log("알림 못 보냄 %s" % type(e).__name__)
+    threading.Thread(target=go, daemon=True).start()
+
+
+def setup_note():
+    """알림 걸기 — 원장님이 마을에서 직접 돌린다. 토큰은 화면에 보이지 않고, 자료 폴더에만 적힌다."""
+    import getpass
+    token = getpass.getpass("봇 토큰(BotFather 가 준 것. 붙여 넣어도 화면에 안 보입니다): ").strip()
+    if not re.match(r"^\d+:[A-Za-z0-9_-]{30,}$", token):
+        sys.exit("토큰 꼴이 아닙니다. 아무것도 바꾸지 않았습니다.")
+    me = tg(token, "getMe")["result"]
+    print("봇: @%s" % me.get("username"))
+    input("텔레그램에서 이 봇에게 아무 말이나 한 줄 보낸 뒤 여기서 엔터를 누르세요. ")
+    ups = [u["message"] for u in tg(token, "getUpdates").get("result", []) if "message" in u]
+    if not ups:
+        sys.exit("봇이 받은 말이 없습니다. 봇에게 한 줄 보낸 뒤 다시 돌려 주세요. 아무것도 바꾸지 않았습니다.")
+    chat = ups[-1]["chat"]
+    name = chat.get("title") or " ".join(filter(None, [chat.get("first_name"), chat.get("last_name")]))
+    if input("이 방으로 알릴까요? 「%s」 (y/n): " % name).strip().lower() != "y":
+        sys.exit("그만둡니다. 아무것도 바꾸지 않았습니다.")
+    with open(os.open(NOTE, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600), "w", encoding="utf-8") as f:
+        json.dump({"token": token, "chat": chat["id"]}, f)
+    tg(token, "sendMessage", chat_id=chat["id"], text="ヨヨイ 창구 — 알림이 걸렸습니다. 손님 말이 오면 여기로 알립니다.")
+    print("걸었습니다. 텔레그램에 시험 알림이 갔습니다. 끄려면 %s 를 지우면 됩니다." % NOTE)
 
 
 def path_of(tid):
@@ -305,21 +372,27 @@ class H(BaseHTTPRequestHandler):
         pg = re.sub(r"[^A-Za-z0-9/_.-]", "", pg)[:120]
         tid = d.get("t")
         row = {"at": now(), "who": "guest", "text": text}
+        first = not tid
         if tid:
             msgs = read(tid) if isinstance(tid, str) else None
             if msgs is None:
                 return self.js(404, {"ok": False, "why": "thread"})
             if len(msgs) >= MAX_MSGS:
                 return self.js(429, {"ok": False, "why": "full"})
+            lang, pg = msgs[0].get("lang", lang), msgs[0].get("page", pg)
         else:
             tid = secrets.token_urlsafe(12)
             row.update(lang=lang, page=pg)
         append(tid, row)
         log("%s guest %d자 %s %s" % (tid, len(text), lang, pg))
+        notify(tid, lang, pg, first)
         return self.js(200, {"ok": True, "t": tid})
 
 
 if __name__ == "__main__":
+    if sys.argv[1:] == ["알림"]:
+        setup_note()
+        sys.exit(0)
     srv = ThreadingHTTPServer(("127.0.0.1", PORT), H)
     srv.daemon_threads = True
     log("문 열림 127.0.0.1:%d" % PORT)
