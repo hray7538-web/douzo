@@ -116,7 +116,7 @@ ANSWER = os.path.join(DATA, "답")      # 있으면 에이전트가 먼저 답�
 KEYENV = os.path.expanduser(os.environ.get("YOYOI_CH_KEYENV", "~/열쇠/열쇠.env"))
 API = os.environ.get("YOYOI_CH_API", "https://api.anthropic.com/v1/messages")
 MODEL = "claude-opus-5-5"
-ANSWERED = {"d": "", "n": 0}
+COUNT = os.path.join(DATA, "답-센것")   # {"d": 날짜, "n": 오늘 답한 수} · 서버가 다시 켜져도 하루 한도가 이어지게 파일에 둔다
 BUSY = set()                           # 지금 답을 짓고 있는 대화
 LANGNAME = {"en": "English", "ja": "日本語", "ko": "한국어", "zh-hant": "繁體中文", "zh-hans": "简体中文", "th": "ไทย"}
 MIND = """You are the front desk of ヨヨイ (Yoyoi, yoyoi.jp). Yoyoi takes a traveler's own words and arranges a reservation at a shop in Japan (restaurants, hair salons, nail salons; Nagoya, Kyoto, Osaka), including shops that only take bookings by phone in Japanese. Its one line is 「사람은 말은 한다」: people can say what they want; the rest is our work. Shops write here too, to say what they offer, and people ask about working with us.
@@ -257,11 +257,16 @@ def answer(tid):
                     return log("%s 답 안 함(이 대화 한도)" % tid)
                 with LOCK:
                     today = datetime.datetime.now(KST).date().isoformat()
-                    if ANSWERED["d"] != today:
-                        ANSWERED["d"], ANSWERED["n"] = today, 0
-                    if ANSWERED["n"] >= per_day:
+                    try:
+                        with open(COUNT, encoding="utf-8") as f:
+                            c = json.load(f)
+                        used = int(c["n"]) if c.get("d") == today else 0
+                    except Exception:
+                        used = 0
+                    if used >= per_day:
                         return log("%s 답 안 함(하루 한도)" % tid)
-                    ANSWERED["n"] += 1
+                    with open(COUNT, "w", encoding="utf-8") as f:
+                        json.dump({"d": today, "n": used + 1}, f)
                 n = len(said)
                 got = compose(msgs)
                 if not got:
