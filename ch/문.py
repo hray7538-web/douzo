@@ -4,7 +4,12 @@
 #   길: yoyoi.jp 의 한 칸 → POST <창구>/say → 캐디 → 127.0.0.1:7980 → <자료>/대화/<대화표>.jsonl
 #       손님은 yoyoi.jp/t/#<대화표> 에서 답을 보고 이어 쓴다. 대화표가 곧 열쇠다(로그인 없음).
 #       우리는 <창구>/<열쇠>/ 에서 읽고 답한다. 열쇠가 틀리면 404 만 준다.
-#   v1 원칙 그대로: 자동으로 답하지 않는다. 받고, 쌓고, 보여 준다. 답은 사람(미치)이 쓴다.
+#   받고, 쌓고, 보여 준다. 답은 안쪽 화면에서 사람이 쓴다.
+#   먼저 답하기(11-24 원장님 「먼저 답해」): <자료>/답 이 있으면 손님 말이 올 때 ヨヨイ 에이전트가 먼저 답한다.
+#         하는 일은 접수(ops/INTAKE.md 의 1·3)까지다: 알아듣고, 빠진 것을 하나씩 묻고, 조건을 되읽는다.
+#         가게 이름·빈자리·확정은 말하지 않는다(아직 아무도 가게에 묻지 않았으니). 그것은 사람이 안쪽 화면에서 쓴다.
+#         켜기 = touch <자료>/답 (안에 {"day": 60, "thread": 12} 를 적으면 하루·대화마다 한도를 바꾼다) · 끄기 = 그 파일을 지운다.
+#         열쇠는 환경 ANTHROPIC_API_KEY, 없으면 ~/열쇠/열쇠.env 에서 읽는다. 값은 어디에도 적지 않는다.
 #   글은 고치거나 줄이지 않는다. 한 줄 = 한 마디. 손님 주소(IP)는 적지 않는다.
 #   자료는 이 저장소(공개) 밖에 둔다: 기본 ~/창구-자료 · 바꾸려면 YOYOI_CH_DATA
 #   알림: <자료>/알림 이 있으면 손님 말이 올 때 텔레그램으로 「왔습니다」 한 줄을 보낸다. 손님 글은 보내지 않는다.
@@ -21,6 +26,7 @@ import secrets
 import sys
 import threading
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -100,6 +106,140 @@ def notify(tid, lang, pg, first):
             tg(token, "sendMessage", chat_id=chat, text=text, disable_web_page_preview="true")
         except Exception as e:
             log("알림 못 보냄 %s" % type(e).__name__)
+    threading.Thread(target=go, daemon=True).start()
+
+
+ANSWER = os.path.join(DATA, "답")      # 있으면 에이전트가 먼저 답한다. 없으면 예전 그대로다
+KEYENV = os.path.expanduser(os.environ.get("YOYOI_CH_KEYENV", "~/열쇠/열쇠.env"))
+API = os.environ.get("YOYOI_CH_API", "https://api.anthropic.com/v1/messages")
+MODEL = "claude-opus-5-5"
+ANSWERED = {"d": "", "n": 0}
+BUSY = set()                           # 지금 답을 짓고 있는 대화
+LANGNAME = {"en": "English", "ja": "日本語", "ko": "한국어", "zh-hant": "繁體中文", "zh-hans": "简体中文", "th": "ไทย"}
+MIND = """You are the front desk of ヨヨイ (Yoyoi, yoyoi.jp). Yoyoi takes a traveler's own words and arranges a reservation at a shop in Japan (restaurants, hair salons, nail salons; Nagoya, Kyoto, Osaka), including shops that only take bookings by phone in Japanese. Its one line is 「사람은 말은 한다」: people can say what they want; the rest is our work. Shops write here too, to say what they offer, and people ask about working with us.
+
+You are an AI, and you are the first to answer. A person on the Yoyoi team reads this same conversation and does what you cannot: contacting shops and confirming. Do not hide that you are an AI if asked.
+
+What you do in this conversation is intake:
+- Understand what the person wants, in whatever language and however roughly it was written. Never ask them to rewrite or fill in a form.
+- A reservation needs: date, time, number of people, area, rough budget, foods they cannot eat (as ingredients, e.g. "no pork, including broth and lard", not as a diet label), and a name for the booking. Work out which of these are still missing and ask for them, the most important one or two at a time, in plain words. Do not ask again for anything already said.
+- When everything is there, read the conditions back once in a short list and ask them to confirm. After they confirm, tell them the team will now look for a place and call, and that the answer will arrive on this same page, normally within a day.
+- If a shop owner or a job seeker writes, thank them, ask the one or two things the team would need to follow up, and say a person will reply here.
+
+What you must not do, because nobody has contacted any shop yet:
+- Do not name, recommend or describe specific shops. Do not say or imply that a table is available, held, or confirmed. Do not quote prices or promise a time other than "normally within a day".
+- Do not ask for a phone number, email, passport or payment details. This page is where the answer comes.
+- If someone asks for something outside this (medical or legal advice, anything unrelated), say briefly that this desk only arranges reservations.
+
+How you write: reply in the language the person wrote in (the page they came from was %s, use that if their message is too short to tell). Short and warm, two to five sentences, plain text with no markdown. Write only the reply itself."""
+
+
+def api_key():
+    k = os.environ.get("ANTHROPIC_API_KEY", "").strip()
+    if k:
+        return k
+    try:
+        with open(KEYENV, encoding="utf-8") as f:
+            for line in f:
+                m = re.match(r"^\s*(?:export\s+)?ANTHROPIC_API_KEY\s*=\s*[\"']?([^\"'\s#]+)", line)
+                if m:
+                    return m.group(1)
+    except OSError:
+        pass
+    return ""
+
+
+def compose(msgs):
+    """대화를 모델에게 물어 답 한 마디를 받는다. 못 받으면 None."""
+    key = api_key()
+    if not key:
+        log("답 못 함 열쇠 없음")
+        return None
+    turns = []
+    for m in msgs:
+        if m.get("who") not in ("guest", "us") or not (m.get("text") or "").strip():
+            continue
+        role = "user" if m["who"] == "guest" else "assistant"
+        if turns and turns[-1]["role"] == role:
+            turns[-1]["content"] += "\n\n" + m["text"]
+        else:
+            turns.append({"role": role, "content": m["text"]})
+    while turns and turns[0]["role"] != "user":
+        turns.pop(0)
+    if not turns or turns[-1]["role"] != "user":
+        return None
+    body = {"model": MODEL, "max_tokens": 4000, "output_config": {"effort": "low"}, "fallbacks": "default",
+            "system": MIND % LANGNAME.get(msgs[0].get("lang"), "English"), "messages": turns}
+    req = urllib.request.Request(API, data=json.dumps(body).encode("utf-8"), headers={
+        "Content-Type": "application/json", "x-api-key": key, "anthropic-version": "2026-10-21",
+        "anthropic-beta": "server-side-fallback-2026-07-01"})
+    try:
+        with urllib.request.urlopen(req, timeout=90) as r:
+            d = json.loads(r.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        log("답 못 함 HTTP %d" % e.code)
+        return None
+    except Exception as e:
+        log("답 못 함 %s" % type(e).__name__)
+        return None
+    if d.get("stop_reason") != "end_turn":
+        log("답 못 함 stop=%s" % d.get("stop_reason"))
+        return None
+    text = "".join(b.get("text", "") for b in d.get("content", []) if b.get("type") == "text").strip()
+    u = d.get("usage", {})
+    log("답 지음 %s in=%s out=%s" % (d.get("model"), u.get("input_tokens"), u.get("output_tokens")))
+    return text[:MAX_TEXT] or None
+
+
+def answer(tid):
+    """손님 말이 오면 에이전트가 먼저 답한다. <자료>/답 이 없으면 아무것도 하지 않는다. 답을 못 지어도 받기는 멈추지 않는다."""
+    try:
+        with open(ANSWER, encoding="utf-8") as f:
+            raw = f.read().strip()
+        cfg = json.loads(raw) if raw else {}
+        per_day, per_thread = int(cfg.get("day", 60)), int(cfg.get("thread", 12))
+    except FileNotFoundError:
+        return
+    except Exception:
+        per_day, per_thread = 60, 12
+    with LOCK:
+        if tid in BUSY:
+            return
+        BUSY.add(tid)
+
+    def go():
+        try:
+            while True:
+                time.sleep(4)                      # 손님이 이어 쓰는 말을 잠깐 기다린다
+                msgs = read(tid) or []
+                said = [m for m in msgs if m.get("who") in ("guest", "us")]
+                if not said or said[-1]["who"] != "guest":
+                    return
+                if sum(1 for m in said if m.get("by") == "agent") >= per_thread:
+                    return log("%s 답 안 함(이 대화 한도)" % tid)
+                with LOCK:
+                    today = datetime.datetime.now(KST).date().isoformat()
+                    if ANSWERED["d"] != today:
+                        ANSWERED["d"], ANSWERED["n"] = today, 0
+                    if ANSWERED["n"] >= per_day:
+                        return log("%s 답 안 함(하루 한도)" % tid)
+                    ANSWERED["n"] += 1
+                n = len(said)
+                text = compose(msgs)
+                if not text:
+                    return
+                now_said = [m for m in (read(tid) or []) if m.get("who") in ("guest", "us")]
+                if now_said and now_said[-1]["who"] == "us":
+                    return                         # 그 사이 사람이 답했다. 사람 말이 이긴다
+                if len(now_said) != n:
+                    continue                       # 그 사이 손님이 더 썼다. 다시 읽고 짓는다
+                append(tid, {"at": now(), "who": "us", "by": "agent", "text": text})
+                return log("%s us(agent) %d자" % (tid, len(text)))
+        except Exception as e:
+            log("답 못 함 %s" % type(e).__name__)
+        finally:
+            with LOCK:
+                BUSY.discard(tid)
     threading.Thread(target=go, daemon=True).start()
 
 
@@ -235,7 +375,7 @@ def ops_thread(tid, msgs):
     for m in msgs:
         w = m.get("who", "guest")
         out.append('<div class="m %s"><small>%s · %s</small>%s</div>'
-                   % (w if w in WHO else "guest", WHO.get(w, w),
+                   % (w if w in WHO else "guest", WHO.get(w, w) + (" · 에이전트" if m.get("by") == "agent" else ""),
                       html.escape(m.get("at", "")[:16].replace("T", " ")), html.escape(m.get("text", ""))))
     out.append('<form method="post"><textarea name="text" required placeholder="손님 말로 답을 씁니다. 쓴 그대로 손님에게 보입니다."></textarea>'
                '<label><input type="checkbox" name="note" value="1"> 메모로만 남긴다(손님에게 안 보임)</label>'
@@ -386,6 +526,7 @@ class H(BaseHTTPRequestHandler):
         append(tid, row)
         log("%s guest %d자 %s %s" % (tid, len(text), lang, pg))
         notify(tid, lang, pg, first)
+        answer(tid)
         return self.js(200, {"ok": True, "t": tid})
 
 
