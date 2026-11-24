@@ -8,6 +8,9 @@
 #   먼저 답하기(11-24 원장님 「먼저 답해」): <자료>/답 이 있으면 손님 말이 올 때 ヨヨイ 에이전트가 먼저 답한다.
 #         하는 일은 접수(ops/INTAKE.md 의 1·3)까지다: 알아듣고, 빠진 것을 하나씩 묻고, 조건을 되읽는다.
 #         가게 이름·빈자리·확정은 말하지 않는다(아직 아무도 가게에 묻지 않았으니). 그것은 사람이 안쪽 화면에서 쓴다.
+#   넣을 글(11-24 원장님 「에이전트가 글로」): 손님이 되읽은 조건에 「좋다」고 하면, 에이전트가 안쪽 메모로 「넣을 글」을 한 번 쓴다.
+#         조건 요약, 대장(ops/shops.json)에서 맞는 가게 후보와 닿는 길, 가게에 그대로 보낼 일본어 글. 손님에게는 안 보인다.
+#         🔴 이 서버는 가게에 아무것도 보내지 않는다. 글을 지어 둘 뿐이다. 보내는 길(LINE 계정 등)은 아직 없다.
 #         켜기 = touch <자료>/답 (안에 {"day": 60, "thread": 12} 를 적으면 하루·대화마다 한도를 바꾼다) · 끄기 = 그 파일을 지운다.
 #         열쇠는 환경 ANTHROPIC_API_KEY, 없으면 ~/열쇠/열쇠.env 에서 읽는다. 값은 어디에도 적지 않는다.
 #   글은 고치거나 줄이지 않는다. 한 줄 = 한 마디. 손님 주소(IP)는 적지 않는다.
@@ -131,7 +134,33 @@ What you must not do, because nobody has contacted any shop yet:
 - Do not ask for a phone number, email, passport or payment details. This page is where the answer comes.
 - If someone asks for something outside this (medical or legal advice, anything unrelated), say briefly that this desk only arranges reservations.
 
-How you write: reply in the language the person wrote in (the page they came from was %s, use that if their message is too short to tell). Short and warm, two to five sentences, plain text with no markdown. Write only the reply itself."""
+How you write the reply: in the language the person wrote in (the page they came from was %(lang)s, use that if their message is too short to tell). Short and warm, two to five sentences, plain text with no markdown.
+
+Today is %(today)s (Japan time). Use it to turn "tomorrow" or "Friday" into a date, and say the date when you read conditions back.
+
+Your output has three fields.
+- reply: what the person sees.
+- confirmed: true only when you had already read the full conditions back and the person's latest message agrees to them. Otherwise false.
+- brief: empty unless confirmed is true. When it is true, write the handover the Yoyoi team works from. The guest never sees it. Write it in this order: (1) the conditions as a short list in Korean, with the date written out and foods-they-cannot-eat as ingredients; (2) 가게 후보: up to three shops from the ledger below that fit the city and kind, each with its name and how it is reached, or the plain sentence 「대장에 맞는 가게가 없다 — 새로 찾아야 한다」 when none fits (most restaurants are not in the ledger; do not stretch a massage or nail shop to fit a dinner request, and never invent a shop); (3) 가게에 보낼 글: a polite Japanese message that can be sent to a shop as it is, saying it is from ヨヨイ (yoyoi.jp), which arranges reservations for visitors from abroad, giving the conditions, asking whether they can take the booking, and asking them to reply in writing. Do not put the guest's nationality in it; give only the booking name, the number of people, the language they speak, and what they cannot eat.
+
+The ledger of shops researched so far (none has been contacted yet):
+%(shops)s"""
+FORM = {"type": "json_schema", "schema": {"type": "object", "additionalProperties": False,
+        "required": ["reply", "confirmed", "brief"],
+        "properties": {"reply": {"type": "string"}, "confirmed": {"type": "boolean"}, "brief": {"type": "string"}}}}
+SHOPS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ops", "shops.json")
+
+
+def ledger():
+    """가게 대장을 한 줄씩. 못 읽으면 빈 대장이다."""
+    try:
+        with open(SHOPS, encoding="utf-8") as f:
+            shops = json.load(f)["shops"]
+        return "\n".join("- %s | %s | %s | %s | 닿는 길: %s" % (
+            x.get("city", ""), x.get("name", ""), x.get("area", ""), x.get("kind", ""),
+            x.get("ch") or x.get("tel") or "?") for x in shops) or "(empty)"
+    except Exception:
+        return "(empty)"
 
 
 def api_key():
@@ -150,7 +179,7 @@ def api_key():
 
 
 def compose(msgs):
-    """대화를 모델에게 물어 답 한 마디를 받는다. 못 받으면 None."""
+    """대화를 모델에게 물어 답을 받는다: {"reply", "confirmed", "brief"}. 못 받으면 None."""
     key = api_key()
     if not key:
         log("답 못 함 열쇠 없음")
@@ -168,8 +197,10 @@ def compose(msgs):
         turns.pop(0)
     if not turns or turns[-1]["role"] != "user":
         return None
-    body = {"model": MODEL, "max_tokens": 4000, "output_config": {"effort": "low"}, "fallbacks": "default",
-            "system": MIND % LANGNAME.get(msgs[0].get("lang"), "English"), "messages": turns}
+    mind = MIND % {"lang": LANGNAME.get(msgs[0].get("lang"), "English"), "shops": ledger(),
+                   "today": datetime.datetime.now(KST).strftime("%Y-%m-%d (%A)")}
+    body = {"model": MODEL, "max_tokens": 8000, "output_config": {"effort": "low", "format": FORM},
+            "fallbacks": "default", "system": mind, "messages": turns}
     req = urllib.request.Request(API, data=json.dumps(body).encode("utf-8"), headers={
         "Content-Type": "application/json", "x-api-key": key, "anthropic-version": "2026-10-21",
         "anthropic-beta": "server-side-fallback-2026-07-01"})
@@ -185,10 +216,17 @@ def compose(msgs):
     if d.get("stop_reason") != "end_turn":
         log("답 못 함 stop=%s" % d.get("stop_reason"))
         return None
-    text = "".join(b.get("text", "") for b in d.get("content", []) if b.get("type") == "text").strip()
+    try:
+        o = json.loads(next(b["text"] for b in d.get("content", []) if b.get("type") == "text"))
+        reply = o["reply"].strip()[:MAX_TEXT]
+    except Exception:
+        log("답 못 함 꼴이 아님")
+        return None
     u = d.get("usage", {})
     log("답 지음 %s in=%s out=%s" % (d.get("model"), u.get("input_tokens"), u.get("output_tokens")))
-    return text[:MAX_TEXT] or None
+    if not reply:
+        return None
+    return {"reply": reply, "confirmed": o.get("confirmed") is True, "brief": str(o.get("brief") or "").strip()}
 
 
 def answer(tid):
@@ -225,16 +263,22 @@ def answer(tid):
                         return log("%s 답 안 함(하루 한도)" % tid)
                     ANSWERED["n"] += 1
                 n = len(said)
-                text = compose(msgs)
-                if not text:
+                got = compose(msgs)
+                if not got:
                     return
+                text = got["reply"]
                 now_said = [m for m in (read(tid) or []) if m.get("who") in ("guest", "us")]
                 if now_said and now_said[-1]["who"] == "us":
                     return                         # 그 사이 사람이 답했다. 사람 말이 이긴다
                 if len(now_said) != n:
                     continue                       # 그 사이 손님이 더 썼다. 다시 읽고 짓는다
                 append(tid, {"at": now(), "who": "us", "by": "agent", "text": text})
-                return log("%s us(agent) %d자" % (tid, len(text)))
+                log("%s us(agent) %d자" % (tid, len(text)))
+                if got["confirmed"] and got["brief"] and not any(m.get("kind") == "order" for m in msgs):
+                    append(tid, {"at": now(), "who": "note", "by": "agent", "kind": "order",
+                                 "text": "넣을 글 — 아직 가게에 보내지 않았다\n\n" + got["brief"][:MAX_TEXT * 4]})
+                    log("%s 넣을 글 %d자" % (tid, len(got["brief"])))
+                return
         except Exception as e:
             log("답 못 함 %s" % type(e).__name__)
         finally:
@@ -318,7 +362,8 @@ def threads():
             continue
         said = [m for m in msgs if m.get("who") != "note"]
         last = said[-1] if said else msgs[-1]
-        out.append(dict(t=tid, first=msgs[0], last=last, n=len(said), waiting=last.get("who") == "guest"))
+        out.append(dict(t=tid, first=msgs[0], last=last, n=len(said), waiting=last.get("who") == "guest",
+                        order=any(m.get("kind") == "order" for m in msgs)))
     out.sort(key=lambda x: x["last"].get("at", ""), reverse=True)
     return out
 
@@ -359,7 +404,8 @@ def ops_list():
         rows.append(
             '<a class="row%s" href="t/%s">%s<b>%s</b><small>%s · %s · %s마디 · 마지막 %s (%s)</small></a>'
             % (" wait" if x["waiting"] else "", x["t"],
-               '<span class="tag">답 기다림</span>' if x["waiting"] else "",
+               ('<span class="tag">답 기다림</span>' if x["waiting"] else "")
+               + ('<span class="tag">넣을 차례</span>' if x["order"] else ""),
                html.escape(head), html.escape(f.get("lang", "")), html.escape(f.get("page", "")),
                x["n"], html.escape(l.get("at", "")[:16].replace("T", " ")), WHO.get(l.get("who"), "")))
     n = sum(1 for x in ts if x["waiting"])
