@@ -138,16 +138,17 @@ How you write the reply: in the language the person wrote in (the page they came
 
 Today is %(today)s (Japan time). Use it to turn "tomorrow" or "Friday" into a date, and say the date when you read conditions back.
 
-Your output has three fields.
+Your output has four fields.
 - reply: what the person sees.
 - confirmed: true only when you had already read the full conditions back and the person's latest message agrees to them. Otherwise false.
 - brief: empty unless confirmed is true. When it is true, write the handover the Yoyoi team works from. The guest never sees it. Write it in this order: (1) the conditions as a short list in Korean, with the date written out and foods-they-cannot-eat as ingredients; (2) 가게 후보: up to three shops from the ledger below that fit the city and kind, each with its name and how it is reached, or the plain sentence 「대장에 맞는 가게가 없다 — 새로 찾아야 한다」 when none fits (most restaurants are not in the ledger; do not stretch a massage or nail shop to fit a dinner request, and never invent a shop); (3) 가게에 보낼 글: a polite Japanese message that can be sent to a shop as it is, saying it is from ヨヨイ (yoyoi.jp), which arranges reservations for visitors from abroad, giving the conditions, asking whether they can take the booking, and asking them to reply in writing. Do not put the guest's nationality in it; give only the booking name, the number of people, the language they speak, and what they cannot eat.
+- raise: normally empty. Fill it, in one or two Korean sentences, when the person's latest message touches something this desk must not settle alone and the head of Yoyoi (원장님) has to see: (a) money: paying, deposits, fees, refunds, discounts, compensation; (b) a promise: being asked to guarantee, confirm or commit to something, or a complaint that something promised did not happen; (c) anything you cannot do or are not sure about: medical or legal matters, something outside reservations, a request you cannot make sense of, an angry or distressed person. Say what was asked and why you are passing it up. The guest never sees it. A budget stated as part of the conditions is not a money matter. When you fill raise, do not settle that matter in reply; say that a person on the team will answer that part here.
 
 The ledger of shops researched so far (none has been contacted yet):
 %(shops)s"""
 FORM = {"type": "json_schema", "schema": {"type": "object", "additionalProperties": False,
-        "required": ["reply", "confirmed", "brief"],
-        "properties": {"reply": {"type": "string"}, "confirmed": {"type": "boolean"}, "brief": {"type": "string"}}}}
+        "required": ["reply", "confirmed", "brief", "raise"],
+        "properties": {"reply": {"type": "string"}, "confirmed": {"type": "boolean"}, "brief": {"type": "string"}, "raise": {"type": "string"}}}}
 SHOPS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "ops", "shops.json")
 
 
@@ -179,7 +180,7 @@ def api_key():
 
 
 def compose(msgs):
-    """대화를 모델에게 물어 답을 받는다: {"reply", "confirmed", "brief"}. 못 받으면 None."""
+    """대화를 모델에게 물어 답을 받는다: {"reply", "confirmed", "brief", "raise"}. 못 받으면 None."""
     key = api_key()
     if not key:
         log("답 못 함 열쇠 없음")
@@ -226,7 +227,8 @@ def compose(msgs):
     log("답 지음 %s in=%s out=%s" % (d.get("model"), u.get("input_tokens"), u.get("output_tokens")))
     if not reply:
         return None
-    return {"reply": reply, "confirmed": o.get("confirmed") is True, "brief": str(o.get("brief") or "").strip()}
+    return {"reply": reply, "confirmed": o.get("confirmed") is True, "brief": str(o.get("brief") or "").strip(),
+            "raise": str(o.get("raise") or "").strip()}
 
 
 def answer(tid):
@@ -283,6 +285,10 @@ def answer(tid):
                     append(tid, {"at": now(), "who": "note", "by": "agent", "kind": "order",
                                  "text": "넣을 글 — 아직 가게에 보내지 않았다\n\n" + got["brief"][:MAX_TEXT * 4]})
                     log("%s 넣을 글 %d자" % (tid, len(got["brief"])))
+                if got["raise"]:                   # 돈 · 약속 · 스스로 못 하겠는 것은 원장님께 올린다(11-26 원장님 말씀)
+                    append(tid, {"at": now(), "who": "note", "by": "agent", "kind": "raise",
+                                 "text": "원장님께 올림 — " + got["raise"][:MAX_TEXT]})
+                    log("%s 원장님께 올림 %d자" % (tid, len(got["raise"])))
                 return
         except Exception as e:
             log("답 못 함 %s" % type(e).__name__)
@@ -368,7 +374,8 @@ def threads():
         said = [m for m in msgs if m.get("who") != "note"]
         last = said[-1] if said else msgs[-1]
         out.append(dict(t=tid, first=msgs[0], last=last, n=len(said), waiting=last.get("who") == "guest",
-                        order=any(m.get("kind") == "order" for m in msgs)))
+                        order=any(m.get("kind") == "order" for m in msgs),
+                        up=sum(1 for m in msgs if m.get("kind") == "raise")))
     out.sort(key=lambda x: x["last"].get("at", ""), reverse=True)
     return out
 
@@ -410,7 +417,8 @@ def ops_list():
             '<a class="row%s" href="t/%s">%s<b>%s</b><small>%s · %s · %s마디 · 마지막 %s (%s)</small></a>'
             % (" wait" if x["waiting"] else "", x["t"],
                ('<span class="tag">답 기다림</span>' if x["waiting"] else "")
-               + ('<span class="tag">넣을 차례</span>' if x["order"] else ""),
+               + ('<span class="tag">넣을 차례</span>' if x["order"] else "")
+               + ('<span class="tag">원장님께 %d</span>' % x["up"] if x["up"] else ""),
                html.escape(head), html.escape(f.get("lang", "")), html.escape(f.get("page", "")),
                x["n"], html.escape(l.get("at", "")[:16].replace("T", " ")), WHO.get(l.get("who"), "")))
     n = sum(1 for x in ts if x["waiting"])
